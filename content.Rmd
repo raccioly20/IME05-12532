@@ -1,0 +1,11 @@
+---
+title: "Análise de Sobrevivência"
+output:   
+  html_document: 
+    df_print: paged
+---
+
+
+* [Aula 01](content/slides01/index.html)  
+* [Aula 02](content/slide02/index.html)  
+* [Aula 03](content/slide03/index.html)

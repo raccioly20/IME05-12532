@@ -1,0 +1,8 @@
+navbar: 
+  title: Análise de Sobrevivência
+  left:
+  - text: Aqui estão os exemplos de aula
+    href: content.html
+output:
+  html_document:
+    theme: flatly
