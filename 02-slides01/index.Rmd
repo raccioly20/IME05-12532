@@ -138,6 +138,47 @@ summary(ajusteKM3)
 ```
 
 
+---
+
+class: inverse, center, middle
+
+
+# Vamos usar o pacote survminer para incrementar a visualização
+
+
+---
+
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+library(survminer)
+dados <- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+fit4 <- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+ggsurvplot(fit4, data=dados)
+```
+
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = FALSE}
+ggsurvplot(
+  fit4,                   
+  data = dados,           
+  risk.table = TRUE,      
+  pval = FALSE,           
+  conf.int = TRUE,        
+  xlim = c(0,40),         
+  xlab = "Tempo em meses",  
+  ylab = "S(t)",
+  break.time.by = 10,     
+  ggtheme = theme_light(), 
+  risk.table.y.text.col = T, 
+  risk.table.y.text = FALSE  
+)
+```
 
 
 

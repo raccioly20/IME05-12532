@@ -762,6 +762,173 @@ Call: survfit(formula = Surv(tempo2g, status2g) ~ grupos)
 
 
 
+---
+
+class: inverse, center, middle
+
+
+# Vamos usar o pacote survminer para incrementar a visualização
+
+
+---
+
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*library(survminer)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+library(survminer)
+*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+library(survminer)
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+*fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+library(survminer)
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+*ggsurvplot(fit4, data=dados)
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_04_output-1.png" width="432" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+*ggsurvplot(
+* fit4,
+* data = dados,
+* risk.table = TRUE,
+* pval = FALSE,
+* conf.int = TRUE,
+* xlim = c(0,40),
+* xlab = "Tempo em meses",
+* ylab = "S(t)",
+* break.time.by = 10,
+* ggtheme = theme_light(),
+* risk.table.y.text.col = T,
+* risk.table.y.text = FALSE
+*) 
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_01_output-1.png" width="432" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
 
 
 
