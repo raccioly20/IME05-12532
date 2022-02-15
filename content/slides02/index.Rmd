@@ -224,6 +224,42 @@ survdiff(Surv(tempos, status) ~ grupos, data = subset(dados, grupos!=2),  rho=0)
 survdiff(Surv(tempos, status) ~ grupos, data = subset(dados, grupos!=1),  rho=0)
 ```
 
+---
+
+layout:true
+
+# Teste Log-rank estratificado
+
+---
+
+Neste exemplo temos 2 tratamentos, mas queremos controlar os resultados considerando uma variável categórica (sexo).
+
+O evento estudado é o tempo até a recaída de leucemia.
+
+O conjunto de dados tem os seguintes informação:
+
+- tempo (semanas)
+- status (0 = censura e 1 = falha)
+- sexo (0 = mulher e 1 = homem)
+- logwbc = log do número de células brancas
+- Rx (0 = Novo tratamento e 1 = Placebo)
+
+Vamos ver como isto pode ser feito na função survfit.
+
+---
+
+`r chunk_reveal("ex_11")`
+
+```{r ex_11, include = FALSE}
+library(readxl)
+dados_a <- read_xlsx("anderson.xlsx", col_names=T)
+ajusteKM_S <- survfit(Surv(tempo, status) ~ Rx + strata(sexo), data = dados_a)
+plot(ajusteKM_S, xlab="T(semanas)",ylab="S(t)", lty=1:4) 
+legend("topright",c("Rx=0 e Sexo=M","Rx=0 e Sexo=H", "Rx=1 e Sexo=M",
+                    "Rx=1 e Sexo=H"), lty = 1:4)
+```
+
+
 
 <!-- adjust font size in this css code chunk, currently 80 -->
 

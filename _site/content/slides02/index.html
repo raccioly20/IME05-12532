@@ -1022,6 +1022,147 @@ grupos=3 13       13     7.47      4.08      7.98
 
 
 
+---
+
+layout:true
+
+# Teste Log-rank estratificado
+
+---
+
+Neste exemplo temos 2 tratamentos, mas queremos controlar os resultados considerando uma variável categórica (sexo).
+
+O evento estudado é o tempo até a recaída de leucemia.
+
+O conjunto de dados tem os seguintes informação:
+
+- tempo (semanas)
+- status (0 = censura e 1 = falha)
+- sexo (0 = mulher e 1 = homem)
+- logwbc = log do número de células brancas
+- Rx (0 = Novo tratamento e 1 = Placebo)
+
+Vamos ver como isto pode ser feito na função survfit.
+
+---
+
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+*library(readxl)
+```
+]
+ 
+.panel2-ex_11-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+library(readxl)
+*dados_a &lt;- read_xlsx("anderson.xlsx", col_names=T)
+```
+]
+ 
+.panel2-ex_11-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+library(readxl)
+dados_a &lt;- read_xlsx("anderson.xlsx", col_names=T)
+*ajusteKM_S &lt;- survfit(Surv(tempo, status) ~ Rx + strata(sexo), data = dados_a)
+```
+]
+ 
+.panel2-ex_11-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+library(readxl)
+dados_a &lt;- read_xlsx("anderson.xlsx", col_names=T)
+ajusteKM_S &lt;- survfit(Surv(tempo, status) ~ Rx + strata(sexo), data = dados_a)
+*plot(ajusteKM_S, xlab="T(semanas)",ylab="S(t)", lty=1:4)
+```
+]
+ 
+.panel2-ex_11-auto[
+&lt;img src="index_files/figure-html/ex_11_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+library(readxl)
+dados_a &lt;- read_xlsx("anderson.xlsx", col_names=T)
+ajusteKM_S &lt;- survfit(Surv(tempo, status) ~ Rx + strata(sexo), data = dados_a)
+plot(ajusteKM_S, xlab="T(semanas)",ylab="S(t)", lty=1:4)
+*legend("topright",c("Rx=0 e Sexo=M","Rx=0 e Sexo=H", "Rx=1 e Sexo=M",
+*                   "Rx=1 e Sexo=H"), lty = 1:4)
+```
+]
+ 
+.panel2-ex_11-auto[
+&lt;img src="index_files/figure-html/ex_11_auto_05_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_11-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_11-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_11-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
 
 &lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
 
