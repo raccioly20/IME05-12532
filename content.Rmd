@@ -6,6 +6,6 @@ output:
 ---
 
 
-* [Aula 01](content/slides01/index.html)  
-* [Aula 02](content/slides02/index.html)  
+* [Aula 01](content/slides01/index.html)
+* [Aula 02](content/slides02/index.html)
 * [Aula 03](content/slides03/index.html)
