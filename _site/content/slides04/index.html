@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Modelos Paramétricos
+### Ricardo Accioly
+
+---
+
+
+
+
+
+
+# Modelos Paramétricos
+
+--
+
+Nesta apresentação vamos ver passo a passo como ajustar os modelos exponencial, Weibull e lognormal.
+
+--
+
+Aqui vamos utilizar as funções existentes no pacote `survival`. 
+
+--
+
+Para ajustar um modelo paramétrico usamo a funçaõ `survreg`.
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+
+&lt;!-- get a flipbook version of the my_cars code chunk - pauses are where parentheses are balanced --&gt;
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+*cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+*ekm &lt;- survfit(Surv(tempos,cens)~1)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+ekm &lt;- survfit(Surv(tempos,cens)~1)
+*summary(ekm)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+Call: survfit(formula = Surv(tempos, cens) ~ 1)
+
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    3     20       1   0.9500  0.0487      0.85913        1.000
+    5     19       1   0.9000  0.0671      0.77767        1.000
+    6     18       1   0.8500  0.0798      0.70707        1.000
+    7     17       1   0.8000  0.0894      0.64257        0.996
+    8     16       1   0.7500  0.0968      0.58233        0.966
+    9     15       1   0.7000  0.1025      0.52541        0.933
+   10     14       1   0.6500  0.1067      0.47124        0.897
+   12     12       1   0.5958  0.1107      0.41402        0.857
+   15     11       1   0.5417  0.1131      0.35976        0.816
+   18      9       1   0.4815  0.1154      0.30096        0.770
+   19      8       1   0.4213  0.1156      0.24601        0.721
+   20      7       1   0.3611  0.1137      0.19481        0.669
+   22      6       1   0.3009  0.1095      0.14745        0.614
+   25      5       1   0.2407  0.1028      0.10422        0.556
+   28      4       1   0.1806  0.0931      0.06573        0.496
+   30      3       1   0.1204  0.0792      0.03317        0.437
+   40      2       1   0.0602  0.0581      0.00907        0.399
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+---
+
+count: false
+ 
+
+.panel1-ex_1A-auto[
+
+```r
+*plot(ekm, xlab="Tempo (meses)",ylab="S(t) estimada")
+```
+]
+ 
+.panel2-ex_1A-auto[
+&lt;img src="index_files/figure-html/ex_1A_auto_01_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_1A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Exponencial
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+```
+]
+ 
+.panel2-ex_2-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+*ajustExp
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+
+Coefficients:
+(Intercept) 
+   3.016111 
+
+Scale fixed at 1 
+
+Loglik(model)= -68.3   Loglik(intercept only)= -68.3
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp
+*alfa &lt;- exp(ajustExp$coefficients[1])
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+
+Coefficients:
+(Intercept) 
+   3.016111 
+
+Scale fixed at 1 
+
+Loglik(model)= -68.3   Loglik(intercept only)= -68.3
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp
+alfa &lt;- exp(ajustExp$coefficients[1])
+*alfa
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+
+Coefficients:
+(Intercept) 
+   3.016111 
+
+Scale fixed at 1 
+
+Loglik(model)= -68.3   Loglik(intercept only)= -68.3
+n= 20 
+```
+
+```
+(Intercept) 
+   20.41176 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Weibull
+
+---
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+*ajustWei
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   3.060529 
+
+Scale= 0.647922 
+
+Loglik(model)= -66.1   Loglik(intercept only)= -66.1
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei
+*alfaw &lt;- exp(ajustWei$coefficients[1])
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   3.060529 
+
+Scale= 0.647922 
+
+Loglik(model)= -66.1   Loglik(intercept only)= -66.1
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei
+alfaw &lt;- exp(ajustWei$coefficients[1])
+*alfaw
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   3.060529 
+
+Scale= 0.647922 
+
+Loglik(model)= -66.1   Loglik(intercept only)= -66.1
+n= 20 
+```
+
+```
+(Intercept) 
+   21.33885 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei
+alfaw &lt;- exp(ajustWei$coefficients[1])
+alfaw
+*betaw &lt;- 1/ajustWei$scale
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   3.060529 
+
+Scale= 0.647922 
+
+Loglik(model)= -66.1   Loglik(intercept only)= -66.1
+n= 20 
+```
+
+```
+(Intercept) 
+   21.33885 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei
+alfaw &lt;- exp(ajustWei$coefficients[1])
+alfaw
+betaw &lt;- 1/ajustWei$scale
+*betaw
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   3.060529 
+
+Scale= 0.647922 
+
+Loglik(model)= -66.1   Loglik(intercept only)= -66.1
+n= 20 
+```
+
+```
+(Intercept) 
+   21.33885 
+```
+
+```
+[1] 1.543396
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Lognormal
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+*ajustLog
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog
+*mu &lt;- ajustLog$icoef[1]
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog
+mu &lt;- ajustLog$icoef[1]
+*mu
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+
+```
+(Intercept) 
+   2.717176 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog
+mu &lt;- ajustLog$icoef[1]
+mu
+*sigma &lt;- exp(ajustLog$icoef[2])
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+
+```
+(Intercept) 
+   2.717176 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog
+mu &lt;- ajustLog$icoef[1]
+mu
+sigma &lt;- exp(ajustLog$icoef[2])
+*sigma
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+
+```
+(Intercept) 
+   2.717176 
+```
+
+```
+Log(scale) 
+ 0.7648167 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Comparação dos Modelos 
+
+---
+
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+*tempo &lt;- ekm$time
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo &lt;- ekm$time
+*st &lt;- ekm$surv
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+*ste &lt;- exp(-tempo/alfa)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+*stw &lt;- exp(-(tempo/alfaw)^betaw)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+*stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+*cbind(tempo,st,ste,stw,stln)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+      tempo         st       ste        stw       stln
+ [1,]     3 0.95000000 0.8633164 0.95274148 0.98283934
+ [2,]     5 0.90000000 0.7827384 0.89897484 0.92624322
+ [3,]     6 0.85000000 0.7453152 0.86839357 0.88685752
+ [4,]     7 0.80000000 0.7096812 0.83609525 0.84337638
+ [5,]     8 0.75000000 0.6757509 0.80253272 0.79781416
+ [6,]     9 0.70000000 0.6434428 0.76809812 0.75169629
+ [7,]    10 0.65000000 0.6126794 0.73313414 0.70611769
+ [8,]    12 0.59583333 0.5554947 0.66278292 0.61931883
+ [9,]    15 0.54166667 0.4795676 0.55966698 0.50475984
+[10,]    18 0.48148148 0.4140186 0.46346069 0.41042396
+[11,]    19 0.42129630 0.3942241 0.43345774 0.38317692
+[12,]    20 0.36111111 0.3753760 0.40461041 0.35784922
+[13,]    22 0.30092593 0.3403401 0.35056108 0.31248031
+[14,]    25 0.24074074 0.2938212 0.27891623 0.25592025
+[15,]    28 0.18055556 0.2536607 0.21851514 0.21065456
+[16,]    30 0.12037037 0.2299851 0.18419003 0.18556452
+[17,]    40 0.06018519 0.1409071 0.07154720 0.10195229
+[18,]    45 0.06018519 0.1102934 0.04229094 0.07714984
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+*par(mfrow=c(1,3))
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+*plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): Weibull")
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): log-normal")
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6-auto[
+&lt;img src="index_files/figure-html/ex_6_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_6-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*par(mfrow=c(1,2))
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+*plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+*lines(c(0,tempo),c(1,stw), lty=2)
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stw), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stw), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+*plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stw), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+*lines(c(0,tempo),c(1,stln), lty=2)
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stw), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Log-normal"),bty="n",cex=0.8)
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

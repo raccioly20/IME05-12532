@@ -1,0 +1,219 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos Paramétricos"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: "%current%"
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: true
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelos Paramétricos
+
+--
+
+Nesta apresentação vamos ver passo a passo como ajustar os modelos exponencial, Weibull e lognormal.
+
+--
+
+Aqui vamos utilizar as funções existentes no pacote `survival`. 
+
+--
+
+Para ajustar um modelo paramétrico usamo a funçaõ `survreg`.
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+
+<!-- get a flipbook version of the my_cars code chunk - pauses are where parentheses are balanced -->
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+tempos<-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens<-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+ekm <- survfit(Surv(tempos,cens)~1)
+summary(ekm)
+```
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+---
+
+`r chunk_reveal("ex_1A")`
+
+```{r ex_1A, include = FALSE}
+plot(ekm, xlab="Tempo (meses)",ylab="S(t) estimada")
+```
+
+---
+
+layout: true
+# Modelos Paramétricos - Exponencial
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+ajustExp <- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp
+alfa <- exp(ajustExp$coefficients[1])
+alfa
+```
+
+---
+
+layout: true
+# Modelos Paramétricos - Weibull
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+ajustWei <- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei
+alfaw <- exp(ajustWei$coefficients[1])
+alfaw
+betaw <- 1/ajustWei$scale
+betaw
+```
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Lognormal
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+ajustLog <- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog
+mu <- ajustLog$icoef[1]
+mu
+sigma <- exp(ajustLog$icoef[2])
+sigma
+```
+
+---
+
+layout: true
+# Comparação dos Modelos 
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+tempo <- ekm$time
+st <- ekm$surv
+ste <- exp(-tempo/alfa)
+stw <- exp(-(tempo/alfaw)^betaw)
+stln <- pnorm((-log(tempo) + mu)/sigma)
+cbind(tempo,st,ste,stw,stln)
+```
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = F}
+par(mfrow=c(1,3))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+```
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = F}
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stw), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Log-normal"),bty="n",cex=0.8)
+```
+
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
