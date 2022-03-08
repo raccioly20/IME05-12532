@@ -39,7 +39,7 @@ Nesta apresentação vamos verificar graficamente  através de gráficos Q-Q se 
 
 --
 
-Aqui vamos utilizar as funções existentes nos pacotes `survival` e `car`. 
+Aqui vamos utilizar as funções existentes no pacote `survival`. 
 
 --
 
@@ -60,7 +60,8 @@ layout: true
 library(survival)
 tempos<-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
 cens<-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
-ekm <- survfit(Surv(tempos,cens)~1)
+dados <- data.frame(tempos=tempos, status=cens)
+ekm <- survfit(Surv(tempos,status)~1, data=dados)
 summary(ekm)
 ```
 
@@ -87,7 +88,7 @@ layout: true
 `r chunk_reveal("ex_2")`
 
 ```{r ex_2, include = FALSE}
-ajustExp <- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp <- survreg(Surv(tempos,status)~1, data=dados, dist='exponential')
 ajustExp
 alfa <- exp(ajustExp$coefficients[1])
 alfa
@@ -103,7 +104,7 @@ layout: true
 `r chunk_reveal("ex_3")`
 
 ```{r ex_3, include = FALSE}
-ajustWei <- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei <- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ajustWei
 alfaw <- exp(ajustWei$coefficients[1])
 alfaw
@@ -122,7 +123,7 @@ layout: true
 `r chunk_reveal("ex_4")`
 
 ```{r ex_4, include = FALSE}
-ajustLog <- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog <- survreg(Surv(tempos,status)~1, data=dados, dist='lognorm')
 ajustLog
 mu <- ajustLog$icoef[1]
 mu
@@ -140,7 +141,7 @@ layout: true
 `r chunk_reveal("ex_5")`
 
 ```{r ex_5, include = FALSE}
-ajustLogl <- survreg(Surv(tempos,cens)~1,dist='loglogistic')
+ajustLogl <- survreg(Surv(tempos,status)~1, data=dados, dist='loglogistic')
 ajustLogl
 mu1 <- ajustLogl$icoef[1]
 mu1

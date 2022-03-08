@@ -92,3 +92,16 @@ modelos <- data.frame(modelos=c("Exponencial", "Weibull",
                       p_Akaike = peso.aic)
 sum(peso.aic)
 gt::gt(modelos)
+
+library(flexsurv)
+ajust1 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='exponential')
+ajust2 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='weibull')
+ajust3 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='lognormal')
+ajust4 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='llogis')
+ajust5 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='gengamma')
+
+ajust1$loglik
+ajust2$loglik
+ajust3$loglik
+ajust4$loglik
+ajust5$loglik
