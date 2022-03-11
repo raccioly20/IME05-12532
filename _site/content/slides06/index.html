@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.12/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Modelos Paramétricos - Outros Modelos
+### Ricardo Accioly
+
+---
+
+
+
+
+
+
+# Modelos Paramétricos
+
+--
+
+Neste exemplo são considerados os tempos de reincidência, em meses, de um grupo de 20 pacientes com cancer de bexiga que foram submetidos a um procedimento cirurgico feito por laser. 
+
+--
+
+Aqui vamos utilizar as funções existentes no pacote `survival` e `flexsurv`. 
+
+--
+
+Para ajustar um modelo paramétrico usamos a função `survreg`.
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+
+&lt;!-- get a flipbook version of the my_cars code chunk - pauses are where parentheses are balanced --&gt;
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+*cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+*dados &lt;- data.frame(tempos=tempos, status=cens)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+*ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
+*st &lt;- ekm$surv
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
+st &lt;- ekm$surv
+*tempost &lt;- ekm$time
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Ajuste com o flexsurv 
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*library(flexsurv)
+```
+]
+ 
+.panel2-ex_2-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+library(flexsurv)
+*ajuste1 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='exponential')
+```
+]
+ 
+.panel2-ex_2-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+library(flexsurv)
+ajuste1 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='exponential')
+*ajuste1
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+Call:
+flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
+    dist = "exponential")
+
+Estimates: 
+      est     L95%    U95%    se    
+rate  0.0490  0.0305  0.0788  0.0119
+
+N = 20,  Events: 17,  Censored: 3
+Total time at risk: 347
+Log-likelihood = -68.27389, df = 1
+AIC = 138.5478
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+*ajuste2 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='weibull')
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+ajuste2 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='weibull')
+*ajuste2
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+Call:
+flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
+    dist = "weibull")
+
+Estimates: 
+       est     L95%    U95%    se    
+shape   1.543   1.066   2.235   0.291
+scale  21.339  15.591  29.206   3.417
+
+N = 20,  Events: 17,  Censored: 3
+Total time at risk: 347
+Log-likelihood = -66.13336, df = 2
+AIC = 136.2667
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+*ajuste3 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='lognormal')
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajuste3 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='lognormal')
+*ajuste3
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+```
+Call:
+flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
+    dist = "lognormal")
+
+Estimates: 
+         est    L95%   U95%   se   
+meanlog  2.717  2.372  3.063  0.176
+sdlog    0.765  0.544  1.075  0.133
+
+N = 20,  Events: 17,  Censored: 3
+Total time at risk: 347
+Log-likelihood = -65.7399, df = 2
+AIC = 135.4798
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2C-auto[
+
+```r
+*ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+```
+]
+ 
+.panel2-ex_2C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2C-auto[
+
+```r
+ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+*ajuste4
+```
+]
+ 
+.panel2-ex_2C-auto[
+
+```
+Call:
+flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
+    dist = "gengamma")
+
+Estimates: 
+       est     L95%    U95%    se    
+mu      2.805   2.168   3.442   0.325
+sigma   0.743   0.498   1.110   0.152
+Q       0.247  -1.291   1.786   0.785
+
+N = 20,  Events: 17,  Censored: 3
+Total time at risk: 347
+Log-likelihood = -65.69074, df = 3
+AIC = 137.3815
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*ajuste1$loglik
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+*ajuste2$loglik
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+*ajuste3$loglik
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+*ajuste4$loglik
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+*# Exponencial q=σ=1  # Exponencial q=s=1
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+*TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+*1 - pchisq(TRVe,2)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+1 - pchisq(TRVe,2)
+# Weibull q = 1
+*TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+1 - pchisq(TRVe,2)
+# Weibull q = 1
+TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
+*1 - pchisq(TRVw,1)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+
+```
+[1] 0.3467719
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+1 - pchisq(TRVe,2)
+# Weibull q = 1
+TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
+1 - pchisq(TRVw,1)
+# Lognormal q = 0
+*TRVlog &lt;- 2*(ajuste4$loglik - ajuste3$loglik)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+
+```
+[1] 0.3467719
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1  # Exponencial q=s=1
+TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+1 - pchisq(TRVe,2)
+# Weibull q = 1
+TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
+1 - pchisq(TRVw,1)
+# Lognormal q = 0
+TRVlog &lt;- 2*(ajuste4$loglik - ajuste3$loglik)
+*1 - pchisq(TRVlog,1)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+
+```
+[1] 0.3467719
+```
+
+```
+[1] 0.753858
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Avaliação Gráfica dos modelos 
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_01_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+*lines(ajuste1, col="blue", ci=FALSE)
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+*lines(ajuste2, col="green", ci=FALSE)
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+*lines(ajuste3, col="cyan", ci=FALSE)
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+lines(ajuste3, col="cyan", ci=FALSE)
+*lines(ajuste4,col="red", ci=FALSE)
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+lines(ajuste3, col="cyan", ci=FALSE)
+lines(ajuste4,col="red", ci=FALSE)
+*legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
+*      col=c("blue", "green", "cyan","red"),
+*      c("Exponencial","Weibull", "Lognormal" , "Gama Generalizada"))
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_06_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos Paramétricos - Outros Modelos"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: "%current%"
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: true
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelos Paramétricos
+
+--
+
+Neste exemplo são considerados os tempos de reincidência, em meses, de um grupo de 20 pacientes com cancer de bexiga que foram submetidos a um procedimento cirurgico feito por laser. 
+
+--
+
+Aqui vamos utilizar as funções existentes no pacote `survival` e `flexsurv`. 
+
+--
+
+Para ajustar um modelo paramétrico usamos a função `survreg`.
+
+---
+
+layout: true
+# Modelos Não Paramétricos - KM
+
+
+<!-- get a flipbook version of the my_cars code chunk - pauses are where parentheses are balanced -->
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+tempos<-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens<-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados <- data.frame(tempos=tempos, status=cens)
+ekm <- survfit(Surv(tempos,status)~1, data=dados)
+st <- ekm$surv
+tempost <- ekm$time
+```
+
+---
+
+layout: true
+# Ajuste com o flexsurv 
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+library(flexsurv)
+ajuste1 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='exponential')
+ajuste1
+```
+
+---
+
+`r chunk_reveal("ex_2A")`
+
+```{r ex_2A, include = FALSE}
+ajuste2 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='weibull')
+ajuste2
+```
+
+---
+
+`r chunk_reveal("ex_2B")`
+
+```{r ex_2B, include = FALSE}
+ajuste3 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='lognormal')
+ajuste3
+```
+
+---
+
+`r chunk_reveal("ex_2C")`
+
+```{r ex_2C, include = FALSE}
+ajuste4 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+ajuste4
+```
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = F}
+ajuste1$loglik
+ajuste2$loglik
+ajuste3$loglik
+ajuste4$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1
+TRVe <- 2*(ajuste4$loglik - ajuste1$loglik)
+1 - pchisq(TRVe,2)
+# Weibull q = 1
+TRVw <- 2*(ajuste4$loglik - ajuste2$loglik)
+1 - pchisq(TRVw,1)
+# Lognormal q = 0
+TRVlog <- 2*(ajuste4$loglik - ajuste3$loglik)
+1 - pchisq(TRVlog,1)
+```
+
+---
+
+layout: true
+#  Avaliação Gráfica dos modelos 
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = F}
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+lines(ajuste3, col="cyan", ci=FALSE)
+lines(ajuste4,col="red", ci=FALSE)
+legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
+       col=c("blue", "green", "cyan","red"),
+       c("Exponencial","Weibull", "Lognormal" , "Gama Generalizada"))
+```
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+

@@ -97,11 +97,18 @@ library(flexsurv)
 ajust1 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='exponential')
 ajust2 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='weibull')
 ajust3 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='lognormal')
-ajust4 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='llogis')
-ajust5 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='gengamma')
+ajust4 <- flexsurvreg(Surv(survt,status)~1,data=dados, dist='gengamma')
 
 ajust1$loglik
 ajust2$loglik
 ajust3$loglik
 ajust4$loglik
 ajust5$loglik
+
+# Calculo do Teste de Razão de Verossimilhança
+TRVe <- 2*(ajust4$loglik - ajust1$loglik[2])
+1 - pchisq(TRVe,2)
+TRVw <- 2*(ajust4$loglik - ajust2$loglik[2])
+1 - pchisq(TRVw,1)
+TRVlog <- 2*(ajust4$loglik - ajust3$loglik[2])
+1 - pchisq(TRVlog,1)
