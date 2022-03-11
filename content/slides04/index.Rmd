@@ -33,11 +33,7 @@ library(tidyverse)
 
 # Modelos Paramétricos
 
---
-
 Neste exemplo são considerados os tempos de reincidência, em meses, de um grupo de 20 pacientes com cancer de bexiga que foram submetidos a um procedimento cirurgico feito por laser. 
-
--- 
 
 Vamos ver passo a passo como ajustar os modelos exponencial, Weibull e lognormal.
 
