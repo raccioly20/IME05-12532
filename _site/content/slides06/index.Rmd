@@ -118,10 +118,10 @@ layout: true
 `r chunk_reveal("ex_3")`
 
 ```{r ex_3, include = F}
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik #exponecial
+ajuste2$loglik # Weibull
+ajuste3$loglik # Lognormal
+ajuste4$loglik # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1

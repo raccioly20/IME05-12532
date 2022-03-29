@@ -4,7 +4,7 @@
     <title>Análise de Sobrevivência</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ricardo Accioly" />
-    <script src="libs/header-attrs-2.12/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -550,7 +550,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-*ajuste1$loglik
+*ajuste1$loglik  #exponecial
 ```
 ]
  
@@ -568,8 +568,8 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-*ajuste2$loglik
+ajuste1$loglik  #exponecial
+*ajuste2$loglik  # Weibull
 ```
 ]
  
@@ -591,9 +591,9 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-*ajuste3$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+*ajuste3$loglik  # Lognormal
 ```
 ]
  
@@ -619,10 +619,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-*ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+*ajuste4$loglik  # Gama Generalizada
 ```
 ]
  
@@ -652,10 +652,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 *# Exponencial q=σ=1  # Exponencial q=s=1
@@ -688,10 +688,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
@@ -725,10 +725,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
@@ -767,10 +767,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
@@ -811,10 +811,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
@@ -860,10 +860,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
@@ -911,10 +911,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik
-ajuste2$loglik
-ajuste3$loglik
-ajuste4$loglik
+ajuste1$loglik  #exponecial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1  # Exponencial q=s=1
