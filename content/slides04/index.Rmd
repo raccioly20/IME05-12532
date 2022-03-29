@@ -11,7 +11,7 @@ output:
       ratio: 16:9
       highlightStyle: "foundation"
       highlightLines: true
-      countIncrementalSlides: true
+      countIncrementalSlides: false
 ---
 
 
@@ -43,7 +43,7 @@ Aqui vamos utilizar as funções existentes no pacote `survival`.
 
 --
 
-Para ajustar um modelo paramétrico usamo a funçaõ `survreg`.
+Para ajustar um modelo paramétrico usamo a função `survreg`.
 
 ---
 

@@ -7,11 +7,11 @@ output:
     lib_dir: libs
     css: [default, metropolis, metropolis-fonts]
     nature:
-      slideNumberFormat: "%current%"
       ratio: 16:9
+      slideNumberFormat: "%current%"
       highlightStyle: "foundation"
       highlightLines: true
-      countIncrementalSlides: true
+      countIncrementalSlides: false
 ---
 
 

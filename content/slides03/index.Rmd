@@ -7,11 +7,11 @@ output:
     lib_dir: libs
     css: [default, metropolis, metropolis-fonts]
     nature:
-      slideNumberFormat: "%current%"
       ratio: 16:9
       highlightStyle: "foundation"
       highlightLines: true
-      countIncrementalSlides: true
+      slideNumberFormat: "%current%"
+      countIncrementalSlides: false
 ---
 
 
@@ -35,7 +35,7 @@ library(tidyverse)
 
 --
 
-Nesta apresentação vamos ver passo a passo como obter a função taxa de falhas e de sobervivência para alguns modelos de probabilidade.
+Nesta apresentação vamos ver passo a passo como obter a função taxa de falhas e de sobrevivência para alguns modelos de probabilidade.
 
 --
 

@@ -1,0 +1,177 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos SemiParamétrico de Cox"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelo SemiParamétrico de Cox
+
+--
+
+
+Vamos usar neste exemplo dados de pacientes com leucemia.
+
+--
+
+O objetivo é verificar se o novo tratamento proposto, 6MP, tem efeito sobre a doença. (Rx=1 ou Rx=0)  
+
+--
+
+Existem dois grupos de pacientes. 21 receberam 6MP que é um medicamento para tratar leucemia e os outros 21 receberam placebo. 
+
+--
+
+Além do tipo de tratamento foram coletadas informações sobre o sexo dos pacientes e do log do número de células brancas (logwbc).
+
+--
+
+O evento falha aqui é ocorrer uma recaída na doença.
+
+---
+
+layout: true
+# Modelos de Cox
+
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+library(readxl)
+dados <- read_xlsx("anderson.xlsx")
+gt::gt(head(dados))
+```
+
+---
+
+layout: true
+# Ajustando o modelo de Cox 
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+ajuste1 <- coxph(Surv(tempo,status) ~ Rx,data=dados)
+ajuste1
+```
+
+---
+
+`r chunk_reveal("ex_2A")`
+
+```{r ex_2A, include = FALSE}
+ajuste2 <- coxph(Surv(tempo,status) ~ Rx + logwbc,data=dados)
+ajuste2
+```
+
+---
+
+`r chunk_reveal("ex_2B")`
+
+```{r ex_2B, include = FALSE}
+ajuste3 <- coxph(Surv(tempo,status) ~ Rx + logwbc + sexo,data=dados)
+ajuste3
+```
+
+---
+
+`r chunk_reveal("ex_2C")`
+
+```{r ex_2C, include = FALSE}
+ajuste4 <- coxph(Surv(tempo,status) ~ Rx + logwbc + factor(sexo), data=dados)
+ajuste4
+```
+
+---
+
+layout: true
+# Outro ajuste do modelo de Cox 
+
+---
+
+Neste exemplo os dados considerados referem-se a um estudo, descrito em Klein e Moeschberger (1997), realizado com 90 pacientes do sexo masculino diagnosticados no período de 1970-1978 com c^ ancer de laringe e que foram acompanhados até 01/01/1983. 
+
+--
+
+Para cada paciente foram registrados, no diagnóstico, a idade (em anos)
+e o estágio da doença (I = tumor primário, II = desenvolvimento de nódulos, III = metástases e IV = combinação dos 3 estágiosanteriores) bem como seus respectivos tempos de falha ou censura (em meses). 
+
+--
+
+Os estágios encontram-se ordenados pelo grau de seriedade da doença (menos sério para mais sério).
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+dados2 <- read_table("laringe.txt")
+gt::gt(head(dados2))
+```
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+ajuste5 <- coxph(Surv(tempos,cens) ~ factor(estagio),data=dados2)
+ajuste5
+```
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
