@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Modelos SemiParamétrico de Cox
+### Ricardo Accioly
+
+---
+
+
+
+
+
+
+# Modelo SemiParamétrico de Cox
+
+--
+
+
+Vamos usar neste exemplo dados da biblioteca survival. 
+
+--
+
+Os dados são de sobrevivência de pacientes com cancer de pulmão em estágio avançado do North Central Cancer Treatment Group.
+
+--
+
+- inst:	Institution code (Código da instituição)
+- time:	Survival time in days (Tempo de sobrevivência em dias)
+- status:	censoring status 1=censored (censurado), 2=dead (morto)
+- age:	Age in years (Idade em anos)
+- sex:	Male=1 Female=2 (1=Homem, 2 = Mulher)
+- ph.ecog:	ECOG performance score as rated by the physician. 0=asymptomatic, 1= symptomatic but completely ambulatory, 2= in bed &lt;50% of the day, 3= in bed &gt; 50% of the day but not bedbound, 4 = bedbound
+- ph.karno:	Karnofsky performance score (bad=0-good=100) rated by physician
+- pat.karno:	Karnofsky performance score as rated by patient
+- meal.cal:	Calories consumed at meals
+- wt.loss:	Weight loss in last six months (pounds)
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*dados &lt;- lung
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+dados &lt;- lung
+*str(dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+'data.frame':	228 obs. of  10 variables:
+ $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...
+ $ time     : num  306 455 1010 210 883 ...
+ $ status   : num  2 2 1 2 2 1 2 2 2 2 ...
+ $ age      : num  74 68 56 57 60 74 68 71 53 61 ...
+ $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...
+ $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...
+ $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...
+ $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...
+ $ meal.cal : num  1175 1225 NA 1150 NA ...
+ $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*sum(complete.cases(lung))
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 167
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*gt::gt(head(dados))
+```
+]
+ 
+.panel2-ex_3-auto[
+<div id="oebjehaceh" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#oebjehaceh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#oebjehaceh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#oebjehaceh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#oebjehaceh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#oebjehaceh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#oebjehaceh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#oebjehaceh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#oebjehaceh .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#oebjehaceh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#oebjehaceh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#oebjehaceh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#oebjehaceh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#oebjehaceh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oebjehaceh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#oebjehaceh .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#oebjehaceh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oebjehaceh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#oebjehaceh .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oebjehaceh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#oebjehaceh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oebjehaceh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oebjehaceh .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oebjehaceh .gt_left {
+  text-align: left;
+}
+
+#oebjehaceh .gt_center {
+  text-align: center;
+}
+
+#oebjehaceh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#oebjehaceh .gt_font_normal {
+  font-weight: normal;
+}
+
+#oebjehaceh .gt_font_bold {
+  font-weight: bold;
+}
+
+#oebjehaceh .gt_font_italic {
+  font-style: italic;
+}
+
+#oebjehaceh .gt_super {
+  font-size: 65%;
+}
+
+#oebjehaceh .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#oebjehaceh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#oebjehaceh .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#oebjehaceh .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#oebjehaceh .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">inst</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">time</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">status</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">age</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">sex</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">ph.ecog</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">ph.karno</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">pat.karno</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">meal.cal</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">wt.loss</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_right">3</td>
+<td class="gt_row gt_right">306</td>
+<td class="gt_row gt_right">2</td>
+<td class="gt_row gt_right">74</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">100</td>
+<td class="gt_row gt_right">1175</td>
+<td class="gt_row gt_right">NA</td></tr>
+    <tr><td class="gt_row gt_right">3</td>
+<td class="gt_row gt_right">455</td>
+<td class="gt_row gt_right">2</td>
+<td class="gt_row gt_right">68</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">1225</td>
+<td class="gt_row gt_right">15</td></tr>
+    <tr><td class="gt_row gt_right">3</td>
+<td class="gt_row gt_right">1010</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">56</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">15</td></tr>
+    <tr><td class="gt_row gt_right">5</td>
+<td class="gt_row gt_right">210</td>
+<td class="gt_row gt_right">2</td>
+<td class="gt_row gt_right">57</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">60</td>
+<td class="gt_row gt_right">1150</td>
+<td class="gt_row gt_right">11</td></tr>
+    <tr><td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">883</td>
+<td class="gt_row gt_right">2</td>
+<td class="gt_row gt_right">60</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">100</td>
+<td class="gt_row gt_right">90</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">0</td></tr>
+    <tr><td class="gt_row gt_right">12</td>
+<td class="gt_row gt_right">1022</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">74</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">50</td>
+<td class="gt_row gt_right">80</td>
+<td class="gt_row gt_right">513</td>
+<td class="gt_row gt_right">0</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Ajustando o modelo de Cox 
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*ajuste1 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+*                  pat.karno + meal.cal + wt.loss, data=dados)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajuste1 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + meal.cal + wt.loss, data=dados)
+*coef(ajuste1)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+          age           sex       ph.ecog      ph.karno     pat.karno 
+ 1.064919e-02 -5.508521e-01  7.341767e-01  2.245506e-02 -1.241655e-02 
+     meal.cal       wt.loss 
+ 3.329025e-05 -1.433061e-02 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajuste1 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + meal.cal + wt.loss, data=dados)
+coef(ajuste1)
+*logLik(ajuste1)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+          age           sex       ph.ecog      ph.karno     pat.karno 
+ 1.064919e-02 -5.508521e-01  7.341767e-01  2.245506e-02 -1.241655e-02 
+     meal.cal       wt.loss 
+ 3.329025e-05 -1.433061e-02 
+```
+
+```
+'log Lik.' -498.7519 (df=7)
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+*summary(ajuste1)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ age + sex + ph.ecog + 
+    ph.karno + pat.karno + meal.cal + wt.loss, data = dados)
+
+  n= 168, number of events= 121 
+   (60 observations deleted due to missingness)
+
+                coef  exp(coef)   se(coef)      z Pr(&gt;|z|)   
+age        1.065e-02  1.011e+00  1.161e-02  0.917  0.35906   
+sex       -5.509e-01  5.765e-01  2.008e-01 -2.743  0.00609 **
+ph.ecog    7.342e-01  2.084e+00  2.233e-01  3.288  0.00101 **
+ph.karno   2.246e-02  1.023e+00  1.124e-02  1.998  0.04574 * 
+pat.karno -1.242e-02  9.877e-01  8.054e-03 -1.542  0.12316   
+meal.cal   3.329e-05  1.000e+00  2.595e-04  0.128  0.89791   
+wt.loss   -1.433e-02  9.858e-01  7.771e-03 -1.844  0.06518 . 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+          exp(coef) exp(-coef) lower .95 upper .95
+age          1.0107     0.9894    0.9880    1.0340
+sex          0.5765     1.7347    0.3889    0.8545
+ph.ecog      2.0838     0.4799    1.3452    3.2277
+ph.karno     1.0227     0.9778    1.0004    1.0455
+pat.karno    0.9877     1.0125    0.9722    1.0034
+meal.cal     1.0000     1.0000    0.9995    1.0005
+wt.loss      0.9858     1.0144    0.9709    1.0009
+
+Concordance= 0.651  (se = 0.029 )
+Likelihood ratio test= 28.33  on 7 df,   p=2e-04
+Wald test            = 27.58  on 7 df,   p=3e-04
+Score (logrank) test = 28.41  on 7 df,   p=2e-04
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+*ajuste2 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+*                  pat.karno + wt.loss, data=dados)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajuste2 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + wt.loss, data=dados)
+*coef(ajuste2)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+        age         sex     ph.ecog    ph.karno   pat.karno     wt.loss 
+ 0.01305840 -0.62516673  0.67522724  0.02011588 -0.01474279 -0.01324331 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajuste2 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + wt.loss, data=dados)
+coef(ajuste2)
+*logLik(ajuste2)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+        age         sex     ph.ecog    ph.karno   pat.karno     wt.loss 
+ 0.01305840 -0.62516673  0.67522724  0.02011588 -0.01474279 -0.01324331 
+```
+
+```
+'log Lik.' -640.4764 (df=6)
+```
+]
+
+&lt;style&gt;
+.panel1-ex_6-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*summary(ajuste2)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ age + sex + ph.ecog + 
+    ph.karno + pat.karno + wt.loss, data = dados)
+
+  n= 210, number of events= 148 
+   (18 observations deleted due to missingness)
+
+               coef exp(coef)  se(coef)      z Pr(&gt;|z|)    
+age        0.013058  1.013144  0.009866  1.324 0.185639    
+sex       -0.625167  0.535172  0.178703 -3.498 0.000468 ***
+ph.ecog    0.675227  1.964479  0.198735  3.398 0.000680 ***
+ph.karno   0.020116  1.020320  0.010178  1.976 0.048111 *  
+pat.karno -0.014743  0.985365  0.007300 -2.019 0.043440 *  
+wt.loss   -0.013243  0.986844  0.007009 -1.889 0.058836 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+          exp(coef) exp(-coef) lower .95 upper .95
+age          1.0131     0.9870    0.9937    1.0329
+sex          0.5352     1.8686    0.3770    0.7596
+ph.ecog      1.9645     0.5090    1.3307    2.9001
+ph.karno     1.0203     0.9801    1.0002    1.0409
+pat.karno    0.9854     1.0149    0.9714    0.9996
+wt.loss      0.9868     1.0133    0.9734    1.0005
+
+Concordance= 0.656  (se = 0.025 )
+Likelihood ratio test= 37.2  on 6 df,   p=2e-06
+Wald test            = 36.49  on 6 df,   p=2e-06
+Score (logrank) test = 37.59  on 6 df,   p=1e-06
+```
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Removendo os dados faltantes 
+
+---
+
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+*dados1 &lt;- na.omit(dados)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+*ajuste3 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+*                  pat.karno + meal.cal + wt.loss, data=dados1)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+ajuste3 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + meal.cal + wt.loss, data=dados1)
+*logLik(ajuste3)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+```
+'log Lik.' -494.0344 (df=7)
+```
+]
+
+&lt;style&gt;
+.panel1-ex_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+*summary(ajuste3)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ age + sex + ph.ecog + 
+    ph.karno + pat.karno + meal.cal + wt.loss, data = dados1)
+
+  n= 167, number of events= 120 
+
+                coef  exp(coef)   se(coef)      z Pr(&gt;|z|)   
+age        1.080e-02  1.011e+00  1.160e-02  0.931  0.35168   
+sex       -5.536e-01  5.749e-01  2.016e-01 -2.746  0.00603 **
+ph.ecog    7.395e-01  2.095e+00  2.250e-01  3.287  0.00101 **
+ph.karno   2.244e-02  1.023e+00  1.123e-02  1.998  0.04575 * 
+pat.karno -1.207e-02  9.880e-01  8.116e-03 -1.488  0.13685   
+meal.cal   2.835e-05  1.000e+00  2.594e-04  0.109  0.91298   
+wt.loss   -1.420e-02  9.859e-01  7.766e-03 -1.828  0.06748 . 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+          exp(coef) exp(-coef) lower .95 upper .95
+age          1.0109     0.9893    0.9881    1.0341
+sex          0.5749     1.7395    0.3872    0.8534
+ph.ecog      2.0950     0.4773    1.3479    3.2560
+ph.karno     1.0227     0.9778    1.0004    1.0455
+pat.karno    0.9880     1.0121    0.9724    1.0038
+meal.cal     1.0000     1.0000    0.9995    1.0005
+wt.loss      0.9859     1.0143    0.9710    1.0010
+
+Concordance= 0.653  (se = 0.029 )
+Likelihood ratio test= 28.16  on 7 df,   p=2e-04
+Wald test            = 27.5  on 7 df,   p=3e-04
+Score (logrank) test = 28.31  on 7 df,   p=2e-04
+```
+]
+
+&lt;style&gt;
+.panel1-ex_9-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_9-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_9-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+*ajuste4 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+*                  pat.karno + wt.loss, data=dados1)
+```
+]
+ 
+.panel2-ex_10-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+ajuste4 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno +
+                   pat.karno + wt.loss, data=dados1)
+*logLik(ajuste4)
+```
+]
+ 
+.panel2-ex_10-auto[
+
+```
+'log Lik.' -494.0404 (df=6)
+```
+]
+
+&lt;style&gt;
+.panel1-ex_10-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_10-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_10-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+*summary(ajuste4)
+```
+]
+ 
+.panel2-ex_11-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ age + sex + ph.ecog + 
+    ph.karno + pat.karno + wt.loss, data = dados1)
+
+  n= 167, number of events= 120 
+
+               coef exp(coef)  se(coef)      z Pr(&gt;|z|)   
+age        0.010589  1.010645  0.011429  0.926  0.35419   
+sex       -0.556616  0.573145  0.199666 -2.788  0.00531 **
+ph.ecog    0.738572  2.092944  0.224746  3.286  0.00102 **
+ph.karno   0.022394  1.022647  0.011218  1.996  0.04590 * 
+pat.karno -0.011912  0.988159  0.007974 -1.494  0.13522   
+wt.loss   -0.014200  0.985901  0.007783 -1.824  0.06808 . 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+          exp(coef) exp(-coef) lower .95 upper .95
+age          1.0106     0.9895    0.9883    1.0335
+sex          0.5731     1.7448    0.3875    0.8477
+ph.ecog      2.0929     0.4778    1.3473    3.2513
+ph.karno     1.0226     0.9779    1.0004    1.0454
+pat.karno    0.9882     1.0120    0.9728    1.0037
+wt.loss      0.9859     1.0143    0.9710    1.0011
+
+Concordance= 0.653  (se = 0.029 )
+Likelihood ratio test= 28.15  on 6 df,   p=9e-05
+Wald test            = 27.51  on 6 df,   p=1e-04
+Score (logrank) test = 28.31  on 6 df,   p=8e-05
+```
+]
+
+&lt;style&gt;
+.panel1-ex_11-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_11-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_11-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Teste da Razão de Verossimilhança 
+
+---
+
+count: false
+ 
+
+.panel1-ex_12-auto[
+
+```r
+# Quando os modelos são encaixados e estamos com amostras iguais, podemos usar o teste da razão de verossimilhança
+*TRV &lt;- 2*(logLik(ajuste3) - logLik(ajuste4))
+```
+]
+ 
+.panel2-ex_12-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_12-auto[
+
+```r
+# Quando os modelos são encaixados e estamos com amostras iguais, podemos usar o teste da razão de verossimilhança
+TRV &lt;- 2*(logLik(ajuste3) - logLik(ajuste4))
+*1 - pchisq(TRV,1)
+```
+]
+ 
+.panel2-ex_12-auto[
+
+```
+'log Lik.' 0.9131696 (df=7)
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_12-auto[
+
+```r
+# Quando os modelos são encaixados e estamos com amostras iguais, podemos usar o teste da razão de verossimilhança
+TRV &lt;- 2*(logLik(ajuste3) - logLik(ajuste4))
+1 - pchisq(TRV,1)
+
+# Posso obter o mesmo resultado com a Anova
+*anova(ajuste3,ajuste4)
+```
+]
+ 
+.panel2-ex_12-auto[
+
+```
+'log Lik.' 0.9131696 (df=7)
+```
+
+```
+Analysis of Deviance Table
+ Cox model: response is  Surv(time, status == 2)
+ Model 1: ~ age + sex + ph.ecog + ph.karno + pat.karno + meal.cal + wt.loss
+ Model 2: ~ age + sex + ph.ecog + ph.karno + pat.karno + wt.loss
+   loglik  Chisq Df P(&gt;|Chi|)
+1 -494.03                    
+2 -494.04 0.0119  1    0.9132
+```
+]
+
+&lt;style&gt;
+.panel1-ex_12-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_12-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_12-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos não encaixados
+
+---
+
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+*ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+*                data=dados1)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+                 data=dados1)
+*coef(ajuste5)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+         age     ph.karno      wt.loss 
+ 0.014614112 -0.008985812 -0.001936254 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+                 data=dados1)
+coef(ajuste5)
+*ajuste6 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + pat.karno, data=dados1)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+         age     ph.karno      wt.loss 
+ 0.014614112 -0.008985812 -0.001936254 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+                 data=dados1)
+coef(ajuste5)
+ajuste6 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + pat.karno, data=dados1)
+*coef(ajuste6)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+         age     ph.karno      wt.loss 
+ 0.014614112 -0.008985812 -0.001936254 
+```
+
+```
+         sex      ph.ecog    pat.karno 
+-0.494861735  0.389220202 -0.007463256 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+                 data=dados1)
+coef(ajuste5)
+ajuste6 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + pat.karno, data=dados1)
+coef(ajuste6)
+*AIC(ajuste5,ajuste6)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+         age     ph.karno      wt.loss 
+ 0.014614112 -0.008985812 -0.001936254 
+```
+
+```
+         sex      ph.ecog    pat.karno 
+-0.494861735  0.389220202 -0.007463256 
+```
+
+```
+        df      AIC
+ajuste5  3 1017.267
+ajuste6  3 1001.862
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+ajuste5 &lt;- coxph(Surv(time,status==2) ~ age + ph.karno + wt.loss,
+                 data=dados1)
+coef(ajuste5)
+ajuste6 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + pat.karno, data=dados1)
+coef(ajuste6)
+AIC(ajuste5,ajuste6)
+*BIC(ajuste5,ajuste6)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+         age     ph.karno      wt.loss 
+ 0.014614112 -0.008985812 -0.001936254 
+```
+
+```
+         sex      ph.ecog    pat.karno 
+-0.494861735  0.389220202 -0.007463256 
+```
+
+```
+        df      AIC
+ajuste5  3 1017.267
+ajuste6  3 1001.862
+```
+
+```
+        df      BIC
+ajuste5  3 1025.629
+ajuste6  3 1010.225
+```
+]
+
+&lt;style&gt;
+.panel1-ex_13-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_13-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_13-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
