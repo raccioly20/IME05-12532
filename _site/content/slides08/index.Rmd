@@ -185,7 +185,7 @@ layout: true
 ```{r ex_12, include = FALSE}
 # Quando os modelos são encaixados e estamos com amostras iguais, podemos usar o teste da razão de verossimilhança
 TRV <- 2*(logLik(ajuste3) - logLik(ajuste4))
-1 - pchisq(TRV,1)
+1 - pchisq(TRV[1],1)
 
 # Posso obter o mesmo resultado com a Anova
 anova(ajuste3,ajuste4)
