@@ -661,12 +661,59 @@ count: false
 
 ```r
 ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+*ajuste4a
+```
+]
+ 
+.panel2-ex_7-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4a
 *ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
 ```
 ]
  
 .panel2-ex_7-auto[
 
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
 ]
 
 ---
@@ -677,13 +724,93 @@ count: false
 
 ```r
 ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4a
 ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+*ajuste4b
+```
+]
+ 
+.panel2-ex_7-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    wt.loss, data = dados1, ties = "efron")
+
+              coef exp(coef)  se(coef)      z        p
+sex      -0.570881  0.565028  0.198842 -2.871 0.004091
+ph.ecog   0.844660  2.327188  0.218644  3.863 0.000112
+ph.karno  0.017877  1.018038  0.010887  1.642 0.100584
+wt.loss  -0.012048  0.988025  0.007495 -1.607 0.107975
+
+Likelihood ratio test=24.9  on 4 df, p=5.28e-05
+n= 167, number of events= 120 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4a
+ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b
 *TRV &lt;- 2*(logLik(ajuste4a) - logLik(ajuste4b))
 ```
 ]
  
 .panel2-ex_7-auto[
 
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    wt.loss, data = dados1, ties = "efron")
+
+              coef exp(coef)  se(coef)      z        p
+sex      -0.570881  0.565028  0.198842 -2.871 0.004091
+ph.ecog   0.844660  2.327188  0.218644  3.863 0.000112
+ph.karno  0.017877  1.018038  0.010887  1.642 0.100584
+wt.loss  -0.012048  0.988025  0.007495 -1.607 0.107975
+
+Likelihood ratio test=24.9  on 4 df, p=5.28e-05
+n= 167, number of events= 120 
+```
 ]
 
 ---
@@ -694,13 +821,46 @@ count: false
 
 ```r
 ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4a
 ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b
 TRV &lt;- 2*(logLik(ajuste4a) - logLik(ajuste4b))
 *1 - pchisq(TRV[1],1)
 ```
 ]
  
 .panel2-ex_7-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    wt.loss, data = dados1, ties = "efron")
+
+              coef exp(coef)  se(coef)      z        p
+sex      -0.570881  0.565028  0.198842 -2.871 0.004091
+ph.ecog   0.844660  2.327188  0.218644  3.863 0.000112
+ph.karno  0.017877  1.018038  0.010887  1.642 0.100584
+wt.loss  -0.012048  0.988025  0.007495 -1.607 0.107975
+
+Likelihood ratio test=24.9  on 4 df, p=5.28e-05
+n= 167, number of events= 120 
+```
 
 ```
 [1] 0.1224475
@@ -740,7 +900,7 @@ TRV &lt;- 2*(logLik(ajuste4a) - logLik(ajuste4b))
 
 --
 
-Ao nível de significância de 0,05 poderíamos usar o modelo mais simples sem o pat.karno
+Ao nível de significância de 0,10 poderíamos usar o modelo mais simples sem o pat.karno
 
 ---
 

@@ -15,3 +15,4 @@ output:
 * [Aula 04](content/slides07/index.html)
 * [Aula 05](content/slides08/index.html)
 * [Aula 06](content/slides09/index.html)
+* [Aula 07](content/slides10/index.html)

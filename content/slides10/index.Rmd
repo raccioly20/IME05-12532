@@ -1,0 +1,229 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos SemiParamétrico de Cox"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Diagnóstico do modelo de Cox
+
+--
+
+
+O conjunto de dados carregados a seguir são de 238 pacientes viciados com heroína.
+
+
+--
+
+Os pacientes foram tratados em duas clínicas (1 e 2), além disso foram coletadas informações sobre dose de medicamento ministrado no tratamento e se o paciente já havia sido preso ou não.
+
+--
+
+Os tempos (`survt`) são em dias e o evento analisado foi o tempo até a saída da clínica (status=1) ou o tempo até o término de estudo (tempo censurado (status=0).
+
+- id:	Identificação do paciente
+- clinic: clinica em que ocorreu o tratamento
+- survt:	tempo até a saída da clínica (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- prison: 0= se nunca foi preso e 1= se já foi preso
+- dose: dose do medicamento ministradp
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+library(readxl)
+dados <- read_xlsx("heroina.xlsx", col_names = TRUE )
+summary(dados)
+```
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+sum(complete.cases(dados))
+```
+
+---
+
+layout: true
+# Ajuste do modelo de Cox 
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+ajuste1 <- coxph(Surv(survt,status) ~ clinic + prison + dose,
+                 ties= "efron", data=dados)
+ajuste1
+```
+
+---
+
+
+`r chunk_reveal("ex_3a")`
+
+```{r ex_3a, include = FALSE}
+amostra.dados <- data.frame(clinic = c("1", "2"), prison = rep(0, 2), dose = rep(mean(dados$dose), 2))
+amostra.sobr <- survfit(ajuste1, newdata = amostra.dados)
+plot(amostra.sobr, col = c(1, 2), conf.int = TRUE,
+xlab = "Tempo (dias)", ylab = "S(t)")
+legend("bottomleft", bty = "n", lty = 1, col = 1:2,
+legend = sprintf("clinic %d", 1:2))
+```
+
+---
+
+layout: true
+# Verificação gráfica 
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+vic.km.clinica <- survfit(Surv(survt, status) ~ clinic, data = dados)
+tabela.vic <- summary(vic.km.clinica)
+plot(tabela.vic$time, log(-log(tabela.vic$surv)),
+col = tabela.vic$strata, xlab = "log(t)", ylab = "log(-log(S))",
+pch = 20) 
+```
+
+
+---
+
+layout: true
+# Maneira mais simples
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+library(rms)
+survplot(npsurv(Surv(survt, status) ~ clinic, data = dados),
+loglog = TRUE, logt=TRUE, xlab = "Tempo", ylab = "log(-log(S))")
+```
+
+---
+
+`r chunk_reveal("ex_5a")`
+
+```{r ex_5a, include = FALSE}
+survplot(npsurv(Surv(survt, status) ~ prison, data = dados),
+loglog = TRUE, logt=TRUE, xlab = "Tempo", ylab = "log(-log(S))")
+```
+
+---
+
+`r chunk_reveal("ex_5b")`
+
+```{r ex_5b, include = FALSE}
+dados$dose_60 <- as.integer(dados$dose<=60)
+survplot(npsurv(Surv(survt, status) ~ dose_60, data = dados),
+loglog = TRUE, logt=TRUE, xlab = "Tempo", ylab = "log(-log(S))")
+```
+
+
+---
+
+layout: true
+# Resíduos de Cox-Snell
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = FALSE}
+library(car)
+cox.snell <- abs(dados$status - ajuste1$residuals)
+qqPlot(cox.snell, dist = "exp", rate = mean(cox.snell))
+```
+
+---
+
+layout: true
+# Resíduos de Schoenfeld
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+cox.zph(ajuste1)
+```
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = FALSE}
+resid.sch <- cox.zph(ajuste1)
+par(mfrow=c(1,3))
+plot(resid.sch)
+```
+
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
