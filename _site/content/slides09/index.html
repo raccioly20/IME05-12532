@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Modelos SemiParamétrico de Cox
+### Ricardo Accioly
+
+---
+
+
+
+
+
+
+# Modelo SemiParamétrico de Cox
+
+--
+
+
+Vamos usar neste exemplo dados da biblioteca survival. 
+
+--
+
+Os dados são de sobrevivência de pacientes com cancer de pulmão em estágio avançado do North Central Cancer Treatment Group.
+
+--
+
+- inst:	Institution code (Código da instituição)
+- time:	Survival time in days (Tempo de sobrevivência em dias)
+- status:	censoring status 1=censored (censurado), 2=dead (morto)
+- age:	Age in years (Idade em anos)
+- sex:	Male=1 Female=2 (1=Homem, 2 = Mulher)
+- ph.ecog:	ECOG performance score as rated by the physician. 0=asymptomatic, 1= symptomatic but completely ambulatory, 2= in bed &lt;50% of the day, 3= in bed &gt; 50% of the day but not bedbound, 4 = bedbound
+- ph.karno:	Karnofsky performance score (bad=0-good=100) rated by physician
+- pat.karno:	Karnofsky performance score as rated by patient
+- meal.cal:	Calories consumed at meals
+- wt.loss:	Weight loss in last six months (pounds)
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*dados &lt;- lung
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+dados &lt;- lung
+*summary(dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+      inst            time            status           age       
+ Min.   : 1.00   Min.   :   5.0   Min.   :1.000   Min.   :39.00  
+ 1st Qu.: 3.00   1st Qu.: 166.8   1st Qu.:1.000   1st Qu.:56.00  
+ Median :11.00   Median : 255.5   Median :2.000   Median :63.00  
+ Mean   :11.09   Mean   : 305.2   Mean   :1.724   Mean   :62.45  
+ 3rd Qu.:16.00   3rd Qu.: 396.5   3rd Qu.:2.000   3rd Qu.:69.00  
+ Max.   :33.00   Max.   :1022.0   Max.   :2.000   Max.   :82.00  
+ NA's   :1                                                       
+      sex           ph.ecog          ph.karno        pat.karno     
+ Min.   :1.000   Min.   :0.0000   Min.   : 50.00   Min.   : 30.00  
+ 1st Qu.:1.000   1st Qu.:0.0000   1st Qu.: 75.00   1st Qu.: 70.00  
+ Median :1.000   Median :1.0000   Median : 80.00   Median : 80.00  
+ Mean   :1.395   Mean   :0.9515   Mean   : 81.94   Mean   : 79.96  
+ 3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.: 90.00   3rd Qu.: 90.00  
+ Max.   :2.000   Max.   :3.0000   Max.   :100.00   Max.   :100.00  
+                 NA's   :1        NA's   :1        NA's   :3       
+    meal.cal         wt.loss       
+ Min.   :  96.0   Min.   :-24.000  
+ 1st Qu.: 635.0   1st Qu.:  0.000  
+ Median : 975.0   Median :  7.000  
+ Mean   : 928.8   Mean   :  9.832  
+ 3rd Qu.:1150.0   3rd Qu.: 15.750  
+ Max.   :2600.0   Max.   : 68.000  
+ NA's   :47       NA's   :14       
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*sum(complete.cases(lung))
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 167
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Dados idênticos 
+
+---
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*dados1 &lt;- na.omit(dados)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+*# ties=c("efron","breslow","exact")  # ties=c("efron","breslow","exact")
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+# ties=c("efron","breslow","exact")  # ties=c("efron","breslow","exact")
+*ajuste1 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+*                ties= "efron",
+*                data=dados1)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+# ties=c("efron","breslow","exact")  # ties=c("efron","breslow","exact")
+ajuste1 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+                 ties= "efron",
+                 data=dados1)
+*ajuste2 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+*                ties= "breslow",
+*                data=dados1)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+dados1 &lt;- na.omit(dados)
+# ties=c("efron","breslow","exact")  # ties=c("efron","breslow","exact")
+ajuste1 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+                 ties= "efron",
+                 data=dados1)
+ajuste2 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+                 ties= "breslow",
+                 data=dados1)
+*ajuste3 &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno ,
+*                ties= "exact",
+*                data=dados1)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*dif_met &lt;- rbind(coef(ajuste1), coef(ajuste2), coef(ajuste3))
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+dif_met &lt;- rbind(coef(ajuste1), coef(ajuste2), coef(ajuste3))
+*row.names(dif_met) &lt;- c("Efron", "Breslow", "Exact")
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+dif_met &lt;- rbind(coef(ajuste1), coef(ajuste2), coef(ajuste3))
+row.names(dif_met) &lt;- c("Efron", "Breslow", "Exact")
+*knitr::kable(dif_met)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+|        |        sex|   ph.ecog|  ph.karno|
+|:-------|----------:|---------:|---------:|
+|Efron   | -0.5314194| 0.7491673| 0.0177764|
+|Breslow | -0.5306768| 0.7487334| 0.0177595|
+|Exact   | -0.5316889| 0.7502275| 0.0177955|
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Seleção de Modelo com StepAIC
+
+---
+
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+*library(MASS)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+library(MASS)
+*ajuste4 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno + pat.karno + meal.cal + wt.loss, ties= "efron", data=dados1)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+library(MASS)
+ajuste4 &lt;- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno + pat.karno + meal.cal + wt.loss, ties= "efron", data=dados1)
+*ajust4_AIC &lt;- stepAIC(ajuste4)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Start:  AIC=1002.07
+Surv(time, status == 2) ~ age + sex + ph.ecog + ph.karno + pat.karno + 
+    meal.cal + wt.loss
+
+            Df    AIC
+- meal.cal   1 1000.1
+- age        1 1001.0
+&lt;none&gt;         1002.1
+- pat.karno  1 1002.3
+- wt.loss    1 1003.6
+- ph.karno   1 1004.3
+- sex        1 1008.0
+- ph.ecog    1 1011.1
+
+Step:  AIC=1000.08
+Surv(time, status == 2) ~ age + sex + ph.ecog + ph.karno + pat.karno + 
+    wt.loss
+
+            Df     AIC
+- age        1  998.95
+&lt;none&gt;         1000.08
+- pat.karno  1 1000.29
+- wt.loss    1 1001.60
+- ph.karno   1 1002.28
+- sex        1 1006.29
+- ph.ecog    1 1009.09
+
+Step:  AIC=998.95
+Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + pat.karno + 
+    wt.loss
+
+            Df     AIC
+&lt;none&gt;          998.95
+- pat.karno  1  999.34
+- ph.karno   1 1000.53
+- wt.loss    1 1000.74
+- sex        1 1005.25
+- ph.ecog    1 1007.83
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+*ajust4_AIC &lt;- stepAIC(ajuste4, trace=FALSE)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajust4_AIC &lt;- stepAIC(ajuste4, trace=FALSE)
+*ajust4_AIC
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    pat.karno + wt.loss, data = dados1, ties = "efron")
+
+               coef exp(coef)  se(coef)      z       p
+sex       -0.558190  0.572244  0.199202 -2.802 0.00508
+ph.ecog    0.742983  2.102197  0.227604  3.264 0.00110
+ph.karno   0.020366  1.020575  0.011080  1.838 0.06604
+pat.karno -0.012401  0.987675  0.007978 -1.554 0.12008
+wt.loss   -0.014494  0.985611  0.007693 -1.884 0.05957
+
+Likelihood ratio test=27.28  on 5 df, p=5.028e-05
+n= 167, number of events= 120 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_6-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Seleção de Modelo usando TRV 
+
+---
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+*ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+*TRV &lt;- 2*(logLik(ajuste4a) - logLik(ajuste4b))
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste4a &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b &lt;- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+TRV &lt;- 2*(logLik(ajuste4a) - logLik(ajuste4b))
+*1 - pchisq(TRV[1],1)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+```
+[1] 0.1224475
+```
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+--
+
+Ao nível de significância de 0,05 poderíamos usar o modelo mais simples sem o pat.karno
+
+---
+
+layout: true
+# Seleção de Modelo com interações 
+
+---
+
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+*ajust5_AIC &lt;- stepAIC(ajuste4, scope=list(upper= ~ .^2, lower= ~1),
+*                     trace=FALSE)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+&lt;style&gt;
+.panel1-ex_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+*ajust5_AIC
+```
+]
+ 
+.panel2-ex_9-auto[
+
+```
+Call:
+coxph(formula = Surv(time, status == 2) ~ sex + ph.ecog + ph.karno + 
+    wt.loss + ph.ecog:wt.loss + ph.ecog:ph.karno, data = dados1, 
+    ties = "efron")
+
+                     coef exp(coef) se(coef)      z        p
+sex              -0.76975   0.46313  0.21052 -3.656 0.000256
+ph.ecog           3.77089  43.41885  0.96814  3.895 9.82e-05
+ph.karno          0.05705   1.05871  0.01857  3.072 0.002127
+wt.loss           0.05549   1.05706  0.01514  3.666 0.000246
+ph.ecog:wt.loss  -0.05712   0.94448  0.01160 -4.926 8.40e-07
+ph.ecog:ph.karno -0.02694   0.97342  0.01066 -2.528 0.011486
+
+Likelihood ratio test=48.21  on 6 df, p=1.074e-08
+n= 167, number of events= 120 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_9-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_9-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_9-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
