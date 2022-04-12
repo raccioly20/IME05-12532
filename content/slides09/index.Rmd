@@ -147,14 +147,16 @@ layout: true
 
 ```{r ex_7, include = FALSE}
 ajuste4a <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4a
 ajuste4b <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b
 TRV <- 2*(logLik(ajuste4a) - logLik(ajuste4b))
 1 - pchisq(TRV[1],1)
 ```
 
 --
 
-Ao nível de significância de 0,05 poderíamos usar o modelo mais simples sem o pat.karno
+Ao nível de significância de 0,10 poderíamos usar o modelo mais simples sem o pat.karno
 
 ---
 
