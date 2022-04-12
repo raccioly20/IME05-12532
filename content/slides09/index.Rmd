@@ -1,0 +1,208 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos SemiParamétrico de Cox"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelo SemiParamétrico de Cox
+
+--
+
+
+Vamos usar neste exemplo dados da biblioteca survival. 
+
+--
+
+Os dados são de sobrevivência de pacientes com cancer de pulmão em estágio avançado do North Central Cancer Treatment Group.
+
+--
+
+- inst:	Institution code (Código da instituição)
+- time:	Survival time in days (Tempo de sobrevivência em dias)
+- status:	censoring status 1=censored (censurado), 2=dead (morto)
+- age:	Age in years (Idade em anos)
+- sex:	Male=1 Female=2 (1=Homem, 2 = Mulher)
+- ph.ecog:	ECOG performance score as rated by the physician. 0=asymptomatic, 1= symptomatic but completely ambulatory, 2= in bed <50% of the day, 3= in bed > 50% of the day but not bedbound, 4 = bedbound
+- ph.karno:	Karnofsky performance score (bad=0-good=100) rated by physician
+- pat.karno:	Karnofsky performance score as rated by patient
+- meal.cal:	Calories consumed at meals
+- wt.loss:	Weight loss in last six months (pounds)
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+dados <- lung
+summary(dados)
+```
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+sum(complete.cases(lung))
+```
+
+---
+
+layout: true
+# Dados idênticos 
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+dados1 <- na.omit(dados)
+# ties=c("efron","breslow","exact")
+ajuste1 <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno , 
+                 ties= "efron", 
+                 data=dados1)
+ajuste2 <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno , 
+                 ties= "breslow", 
+                 data=dados1)
+ajuste3 <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno , 
+                 ties= "exact", 
+                 data=dados1)
+```
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+dif_met <- rbind(coef(ajuste1), coef(ajuste2), coef(ajuste3))
+row.names(dif_met) <- c("Efron", "Breslow", "Exact")
+knitr::kable(dif_met)
+```
+
+
+---
+
+layout: true
+# Seleção de Modelo com StepAIC
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+library(MASS)
+ajuste4 <- coxph(Surv(time,status==2) ~ age + sex + ph.ecog + ph.karno + pat.karno + meal.cal + wt.loss, ties= "efron", data=dados1)
+ajust4_AIC <- stepAIC(ajuste4)
+```
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = FALSE}
+ajust4_AIC <- stepAIC(ajuste4, trace=FALSE)
+ajust4_AIC
+```
+
+---
+
+layout: true
+# Seleção de Modelo usando TRV 
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+ajuste4a <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + pat.karno + wt.loss, ties= "efron", data=dados1)
+ajuste4b <- coxph(Surv(time,status==2) ~ sex + ph.ecog + ph.karno + wt.loss, ties= "efron", data=dados1)
+TRV <- 2*(logLik(ajuste4a) - logLik(ajuste4b))
+1 - pchisq(TRV[1],1)
+```
+
+--
+
+Ao nível de significância de 0,05 poderíamos usar o modelo mais simples sem o pat.karno
+
+---
+
+layout: true
+# Seleção de Modelo com interações 
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = FALSE}
+ajust5_AIC <- stepAIC(ajuste4, scope=list(upper= ~ .^2, lower= ~1),
+                      trace=FALSE)
+```
+
+---
+
+`r chunk_reveal("ex_9")`
+
+```{r ex_9, include = FALSE}
+ajust5_AIC
+```
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
