@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Estratificação no Modelo de Cox
+### Ricardo Accioly
+
+---
+
+
+
+
+
+
+# Estratificação no Modelo de Cox
+
+--
+
+
+Vamos usar o conjunto de dados da biblioteca `survival` denominado veteran. 
+
+
+--
+
+Os dados são de um estudo clínico realizado pela Administração de Veteranos sobre veteranos do sexo masculino com câncer de pulmão avançado e inoperável.
+
+--
+
+No ensaio, os pacientes foram randomizados para receber uma quimioterapia padrão ou uma quimioterapia experimental, e o tempo final foi o tempo até a morte
+
+--
+
+Os dados coletados foram:
+
+- trt:	tratamento padrão=1     experimental=2
+- celltype: tipo de tumor (1=squamous, 2=celula pequena, 3=adenocarcinoma, 4=grande)
+- time:	tempo de sobrevivência (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- karno: Karnofsky score, um método de quantificar o status básico do paciente
+- diagtime: tempo em meses do diagnóstico até a aleatorização
+- age: idade em anos na aleatorização
+- prior: terapia anterior 0=não e 10=sim
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*dados &lt;- veteran
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+dados &lt;- veteran
+*summary(dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+      trt             celltype       time           status      
+ Min.   :1.000   squamous :35   Min.   :  1.0   Min.   :0.0000  
+ 1st Qu.:1.000   smallcell:48   1st Qu.: 25.0   1st Qu.:1.0000  
+ Median :1.000   adeno    :27   Median : 80.0   Median :1.0000  
+ Mean   :1.496   large    :27   Mean   :121.6   Mean   :0.9343  
+ 3rd Qu.:2.000                  3rd Qu.:144.0   3rd Qu.:1.0000  
+ Max.   :2.000                  Max.   :999.0   Max.   :1.0000  
+     karno          diagtime           age            prior      
+ Min.   :10.00   Min.   : 1.000   Min.   :34.00   Min.   : 0.00  
+ 1st Qu.:40.00   1st Qu.: 3.000   1st Qu.:51.00   1st Qu.: 0.00  
+ Median :60.00   Median : 5.000   Median :62.00   Median : 0.00  
+ Mean   :58.57   Mean   : 8.774   Mean   :58.31   Mean   : 2.92  
+ 3rd Qu.:75.00   3rd Qu.:11.000   3rd Qu.:66.00   3rd Qu.:10.00  
+ Max.   :99.00   Max.   :87.000   Max.   :81.00   Max.   :10.00  
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+dados &lt;- veteran
+summary(dados)
+*str(dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+      trt             celltype       time           status      
+ Min.   :1.000   squamous :35   Min.   :  1.0   Min.   :0.0000  
+ 1st Qu.:1.000   smallcell:48   1st Qu.: 25.0   1st Qu.:1.0000  
+ Median :1.000   adeno    :27   Median : 80.0   Median :1.0000  
+ Mean   :1.496   large    :27   Mean   :121.6   Mean   :0.9343  
+ 3rd Qu.:2.000                  3rd Qu.:144.0   3rd Qu.:1.0000  
+ Max.   :2.000                  Max.   :999.0   Max.   :1.0000  
+     karno          diagtime           age            prior      
+ Min.   :10.00   Min.   : 1.000   Min.   :34.00   Min.   : 0.00  
+ 1st Qu.:40.00   1st Qu.: 3.000   1st Qu.:51.00   1st Qu.: 0.00  
+ Median :60.00   Median : 5.000   Median :62.00   Median : 0.00  
+ Mean   :58.57   Mean   : 8.774   Mean   :58.31   Mean   : 2.92  
+ 3rd Qu.:75.00   3rd Qu.:11.000   3rd Qu.:66.00   3rd Qu.:10.00  
+ Max.   :99.00   Max.   :87.000   Max.   :81.00   Max.   :10.00  
+```
+
+```
+'data.frame':	137 obs. of  8 variables:
+ $ trt     : num  1 1 1 1 1 1 1 1 1 1 ...
+ $ celltype: Factor w/ 4 levels "squamous","smallcell",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ time    : num  72 411 228 126 118 10 82 110 314 100 ...
+ $ status  : num  1 1 1 1 1 1 1 1 1 0 ...
+ $ karno   : num  60 70 60 60 70 20 40 80 50 70 ...
+ $ diagtime: num  7 5 3 9 11 5 10 29 18 6 ...
+ $ age     : num  69 64 38 63 65 49 69 68 43 70 ...
+ $ prior   : num  0 10 0 10 10 0 10 0 0 0 ...
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*nrow(dados)
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 137
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+nrow(dados)
+*sum(complete.cases(dados))
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 137
+```
+
+```
+[1] 137
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Usando o KM
+
+---
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(time/365.25, status) ~ trt, data=dados)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(time/365.25, status) ~ trt, data=dados)
+*plot(ajusteKM, mark.time=FALSE, col=c(1:2), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+```
+]
+ 
+.panel2-ex_3-auto[
+&lt;img src="index_files/figure-html/ex_3_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(time/365.25, status) ~ trt, data=dados)
+plot(ajusteKM, mark.time=FALSE, col=c(1:2), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+*legend("topright", c('Padrão', 'Experimental'), lwd=3, col=c(1:2))
+```
+]
+ 
+.panel2-ex_3-auto[
+&lt;img src="index_files/figure-html/ex_3_auto_03_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Usando o Cox Padrão
+
+---
+
+count: false
+ 
+
+.panel1-ex_3a-auto[
+
+```r
+*ajusteCox &lt;- coxph(Surv(time/365.25, status) ~ trt + karno + diagtime + age + prior + celltype, data=dados)
+```
+]
+ 
+.panel2-ex_3a-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3a-auto[
+
+```r
+ajusteCox &lt;- coxph(Surv(time/365.25, status) ~ trt + karno + diagtime + age + prior + celltype, data=dados)
+*summary(ajusteCox)
+```
+]
+ 
+.panel2-ex_3a-auto[
+
+```
+Call:
+coxph(formula = Surv(time/365.25, status) ~ trt + karno + diagtime + 
+    age + prior + celltype, data = dados)
+
+  n= 137, number of events= 128 
+
+                        coef  exp(coef)   se(coef)      z Pr(&gt;|z|)    
+trt                2.946e-01  1.343e+00  2.075e-01  1.419  0.15577    
+karno             -3.282e-02  9.677e-01  5.508e-03 -5.958 2.55e-09 ***
+diagtime           8.132e-05  1.000e+00  9.136e-03  0.009  0.99290    
+age               -8.706e-03  9.913e-01  9.300e-03 -0.936  0.34920    
+prior              7.159e-03  1.007e+00  2.323e-02  0.308  0.75794    
+celltypesmallcell  8.616e-01  2.367e+00  2.753e-01  3.130  0.00175 ** 
+celltypeadeno      1.196e+00  3.307e+00  3.009e-01  3.975 7.05e-05 ***
+celltypelarge      4.013e-01  1.494e+00  2.827e-01  1.420  0.15574    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+                  exp(coef) exp(-coef) lower .95 upper .95
+trt                  1.3426     0.7448    0.8939    2.0166
+karno                0.9677     1.0334    0.9573    0.9782
+diagtime             1.0001     0.9999    0.9823    1.0182
+age                  0.9913     1.0087    0.9734    1.0096
+prior                1.0072     0.9929    0.9624    1.0541
+celltypesmallcell    2.3669     0.4225    1.3799    4.0597
+celltypeadeno        3.3071     0.3024    1.8336    5.9647
+celltypelarge        1.4938     0.6695    0.8583    2.5996
+
+Concordance= 0.736  (se = 0.021 )
+Likelihood ratio test= 62.1  on 8 df,   p=2e-10
+Wald test            = 62.37  on 8 df,   p=2e-10
+Score (logrank) test = 66.74  on 8 df,   p=2e-11
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3a-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3a-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3a-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# StepAIC 
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*library(MASS)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+library(MASS)
+*ajuste_AIC &lt;- stepAIC(ajusteCox, trace=FALSE)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+library(MASS)
+ajuste_AIC &lt;- stepAIC(ajusteCox, trace=FALSE)
+*summary(ajuste_AIC)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+coxph(formula = Surv(time/365.25, status) ~ karno + celltype, 
+    data = dados)
+
+  n= 137, number of events= 128 
+
+                       coef exp(coef)  se(coef)      z Pr(&gt;|z|)    
+karno             -0.031057  0.969421  0.005177 -5.999 1.99e-09 ***
+celltypesmallcell  0.715334  2.044870  0.252686  2.831  0.00464 ** 
+celltypeadeno      1.157733  3.182711  0.292937  3.952 7.74e-05 ***
+celltypelarge      0.325645  1.384923  0.276680  1.177  0.23921    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+                  exp(coef) exp(-coef) lower .95 upper .95
+karno                0.9694     1.0315    0.9596    0.9793
+celltypesmallcell    2.0449     0.4890    1.2462    3.3555
+celltypeadeno        3.1827     0.3142    1.7925    5.6513
+celltypelarge        1.3849     0.7221    0.8052    2.3820
+
+Concordance= 0.734  (se = 0.023 )
+Likelihood ratio test= 59.37  on 4 df,   p=4e-12
+Wald test            = 61.26  on 4 df,   p=2e-12
+Score (logrank) test = 63.94  on 4 df,   p=4e-13
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Resíduos de Schoenfeld
+
+---
+
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+*cox.zph(ajuste_AIC)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+         chisq df       p
+karno     14.4  1 0.00015
+celltype  14.1  3 0.00282
+GLOBAL    23.6  4 9.4e-05
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+cox.zph(ajuste_AIC)
+*resid.sch &lt;- cox.zph(ajuste_AIC)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+         chisq df       p
+karno     14.4  1 0.00015
+celltype  14.1  3 0.00282
+GLOBAL    23.6  4 9.4e-05
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+cox.zph(ajuste_AIC)
+resid.sch &lt;- cox.zph(ajuste_AIC)
+*par(mfrow=c(1,2))
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+         chisq df       p
+karno     14.4  1 0.00015
+celltype  14.1  3 0.00282
+GLOBAL    23.6  4 9.4e-05
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+cox.zph(ajuste_AIC)
+resid.sch &lt;- cox.zph(ajuste_AIC)
+par(mfrow=c(1,2))
+*plot(resid.sch)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+         chisq df       p
+karno     14.4  1 0.00015
+celltype  14.1  3 0.00282
+GLOBAL    23.6  4 9.4e-05
+```
+
+&lt;img src="index_files/figure-html/ex_5_auto_04_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_5-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Estratificação de celltype 
+
+---
+
+count: false
+ 
+
+.panel1-ex_5a-auto[
+
+```r
+*ajusteCoxE &lt;- coxph(Surv(time/365.25, status) ~ karno + strata(celltype), data=dados)
+```
+]
+ 
+.panel2-ex_5a-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5a-auto[
+
+```r
+ajusteCoxE &lt;- coxph(Surv(time/365.25, status) ~ karno + strata(celltype), data=dados)
+*summary(ajusteCoxE)
+```
+]
+ 
+.panel2-ex_5a-auto[
+
+```
+Call:
+coxph(formula = Surv(time/365.25, status) ~ karno + strata(celltype), 
+    data = dados)
+
+  n= 137, number of events= 128 
+
+          coef exp(coef) se(coef)      z Pr(&gt;|z|)    
+karno -0.03562   0.96501  0.00554 -6.429 1.28e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+      exp(coef) exp(-coef) lower .95 upper .95
+karno     0.965      1.036    0.9546    0.9755
+
+Concordance= 0.695  (se = 0.025 )
+Likelihood ratio test= 40.97  on 1 df,   p=2e-10
+Wald test            = 41.33  on 1 df,   p=1e-10
+Score (logrank) test = 43.97  on 1 df,   p=3e-11
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5a-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5a-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5a-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_5b-auto[
+
+```r
+*ajuste_aux &lt;- survfit(ajusteCoxE)
+```
+]
+ 
+.panel2-ex_5b-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5b-auto[
+
+```r
+ajuste_aux &lt;- survfit(ajusteCoxE)
+*plot(ajuste_aux, mark.time=FALSE, col=c(1:4), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+```
+]
+ 
+.panel2-ex_5b-auto[
+&lt;img src="index_files/figure-html/ex_5b_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5b-auto[
+
+```r
+ajuste_aux &lt;- survfit(ajusteCoxE)
+plot(ajuste_aux, mark.time=FALSE, col=c(1:4), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+*legend("topright", levels(dados$celltype), lwd=3, col=c(1:4))
+```
+]
+ 
+.panel2-ex_5b-auto[
+&lt;img src="index_files/figure-html/ex_5b_auto_03_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_5b-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5b-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5b-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Estratificação de karno
+
+---
+
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+# Karno 100 bom
+# Karno &gt;60 o paciente está apto a viver sozinho
+# karno 30-60 requer assintência médica
+# karno &lt; 30 paciente hospitalizado
+*dados$fkarno &lt;- cut(dados$karno, c(0, 30, 60, 100))
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+# Karno 100 bom
+# Karno &gt;60 o paciente está apto a viver sozinho
+# karno 30-60 requer assintência médica
+# karno &lt; 30 paciente hospitalizado
+dados$fkarno &lt;- cut(dados$karno, c(0, 30, 60, 100))
+*ajusteCoxE1 &lt;- coxph(Surv(time/365.25, status) ~ strata(fkarno) + celltype, data=dados)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+# Karno 100 bom
+# Karno &gt;60 o paciente está apto a viver sozinho
+# karno 30-60 requer assintência médica
+# karno &lt; 30 paciente hospitalizado
+dados$fkarno &lt;- cut(dados$karno, c(0, 30, 60, 100))
+ajusteCoxE1 &lt;- coxph(Surv(time/365.25, status) ~ strata(fkarno) + celltype, data=dados)
+*summary(ajusteCoxE1)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+Call:
+coxph(formula = Surv(time/365.25, status) ~ strata(fkarno) + 
+    celltype, data = dados)
+
+  n= 137, number of events= 128 
+
+                    coef exp(coef) se(coef)     z Pr(&gt;|z|)    
+celltypesmallcell 0.8849    2.4228   0.2729 3.243  0.00118 ** 
+celltypeadeno     1.2427    3.4651   0.3007 4.133 3.58e-05 ***
+celltypelarge     0.2804    1.3237   0.2816 0.996  0.31937    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+                  exp(coef) exp(-coef) lower .95 upper .95
+celltypesmallcell     2.423     0.4128    1.4191     4.136
+celltypeadeno         3.465     0.2886    1.9220     6.247
+celltypelarge         1.324     0.7555    0.7622     2.299
+
+Concordance= 0.624  (se = 0.029 )
+Likelihood ratio test= 21.35  on 3 df,   p=9e-05
+Wald test            = 20.68  on 3 df,   p=1e-04
+Score (logrank) test = 22.03  on 3 df,   p=6e-05
+```
+]
+
+&lt;style&gt;
+.panel1-ex_6-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*ajuste_aux1 &lt;- survfit(ajusteCoxE1)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste_aux1 &lt;- survfit(ajusteCoxE1)
+*plot(ajuste_aux1, mark.time=FALSE, col=c(1:3), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ajuste_aux1 &lt;- survfit(ajusteCoxE1)
+plot(ajuste_aux1, mark.time=FALSE, col=c(1:3), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+*legend("topright", levels(dados$fkarno), lwd=3, col=c(1:3))
+```
+]
+ 
+.panel2-ex_7-auto[
+&lt;img src="index_files/figure-html/ex_7_auto_03_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

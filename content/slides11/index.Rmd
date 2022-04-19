@@ -1,0 +1,229 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Estratificação no Modelo de Cox"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Estratificação no Modelo de Cox
+
+--
+
+
+Vamos usar o conjunto de dados da biblioteca `survival` denominado veteran. 
+
+
+--
+
+Os dados são de um estudo clínico realizado pela Administração de Veteranos sobre veteranos do sexo masculino com câncer de pulmão avançado e inoperável.
+
+--
+
+No ensaio, os pacientes foram randomizados para receber uma quimioterapia padrão ou uma quimioterapia experimental, e o tempo final foi o tempo até a morte
+
+--
+
+Os dados coletados foram:
+
+- trt:	tratamento padrão=1     experimental=2
+- celltype: tipo de tumor (1=squamous, 2=celula pequena, 3=adenocarcinoma, 4=grande)
+- time:	tempo de sobrevivência (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- karno: Karnofsky score, um método de quantificar o status básico do paciente
+- diagtime: tempo em meses do diagnóstico até a aleatorização
+- age: idade em anos na aleatorização
+- prior: terapia anterior 0=não e 10=sim
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+dados <- veteran
+summary(dados)
+str(dados)
+```
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+nrow(dados)
+sum(complete.cases(dados))
+```
+
+---
+
+layout: true
+# Usando o KM
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+ajusteKM <- survfit(Surv(time/365.25, status) ~ trt, data=dados)
+plot(ajusteKM, mark.time=FALSE, col=c(1:2), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+legend("topright", c('Padrão', 'Experimental'), lwd=3, col=c(1:2))
+```
+
+---
+
+layout: true
+# Usando o Cox Padrão
+
+---
+
+`r chunk_reveal("ex_3a")`
+
+```{r ex_3a, include = FALSE}
+ajusteCox <- coxph(Surv(time/365.25, status) ~ trt + karno + diagtime + age + prior + celltype, data=dados)
+summary(ajusteCox)
+```
+
+---
+
+layout: true
+# StepAIC 
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+library(MASS)
+ajuste_AIC <- stepAIC(ajusteCox, trace=FALSE)
+summary(ajuste_AIC)
+```
+
+
+---
+
+layout: true
+# Resíduos de Schoenfeld
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+cox.zph(ajuste_AIC)
+resid.sch <- cox.zph(ajuste_AIC)
+par(mfrow=c(1,2))
+plot(resid.sch)
+```
+
+---
+
+layout: true
+# Estratificação de celltype 
+
+---
+
+`r chunk_reveal("ex_5a")`
+
+```{r ex_5a, include = FALSE}
+ajusteCoxE <- coxph(Surv(time/365.25, status) ~ karno + strata(celltype), data=dados)
+summary(ajusteCoxE)
+```
+
+---
+
+`r chunk_reveal("ex_5b")`
+
+```{r ex_5b, include = FALSE}
+ajuste_aux <- survfit(ajusteCoxE)
+plot(ajuste_aux, mark.time=FALSE, col=c(1:4), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+legend("topright", levels(dados$celltype), lwd=3, col=c(1:4))
+```
+
+
+---
+
+layout: true
+# Estratificação de karno
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = FALSE}
+# Karno 100 bom
+# Karno >60 o paciente está apto a viver sozinho
+# karno 30-60 requer assintência médica
+# karno < 30 paciente hospitalizado
+dados$fkarno <- cut(dados$karno, c(0, 30, 60, 100))
+ajusteCoxE1 <- coxph(Surv(time/365.25, status) ~ strata(fkarno) + celltype, data=dados)
+summary(ajusteCoxE1)
+```
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+ajuste_aux1 <- survfit(ajusteCoxE1)
+plot(ajuste_aux1, mark.time=FALSE, col=c(1:3), lwd=3, las=1, bty='n', xlab='Tempo (anos)', ylab='Sobrevivência')
+legend("topright", levels(dados$fkarno), lwd=3, col=c(1:3))
+```
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
