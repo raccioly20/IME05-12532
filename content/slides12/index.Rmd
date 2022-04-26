@@ -1,0 +1,201 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos Paramétricos TFA (AFT)"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelo TFA Exponencial
+
+--
+
+
+O conjunto de dados carregados a seguir são de 238 pacientes viciados com heroína.
+
+
+--
+
+Os pacientes foram tratados em duas clínicas (1 e 2), além disso foram coletadas informações sobre dose de medicamento ministrado no tratamento e se o paciente já havia sido preso ou não.
+
+--
+
+Os tempos (`survt`) são em dias e o evento analisado foi o tempo até a saída da clínica (status=1) ou o tempo até o término de estudo (tempo censurado (status=0).
+
+- id:	Identificação do paciente
+- clinic: clinica em que ocorreu o tratamento
+- survt:	tempo até a saída da clínica (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- prison: 0= se nunca foi preso e 1= se já foi preso
+- dose: dose do medicamento ministradp
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+library(readxl)
+dados <- read_xlsx("heroina.xlsx", col_names = TRUE )
+summary(dados)
+```
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+nrow(dados)
+sum(complete.cases(dados))
+```
+
+---
+
+layout: true
+# Modelo TFA Exponencial
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+TFAExp <- survreg(Surv(survt, status) ~ clinic + prison + dose,
+                   dist = "exponential", 
+                   data=dados)
+summary(TFAExp)
+```
+
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+TFAExp1 <- survreg(Surv(survt, status) ~ clinic + dose,
+                   dist = "exponential", 
+                   data=dados)
+summary(TFAExp1)
+```
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+TPCox <- coxph(Surv(survt, status) ~ clinic + dose, data=dados)
+summary(TPCox)
+```
+
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = FALSE}
+ajusteKM <- survfit(Surv(survt, status) ~ clinic, data = dados)
+plot(ajusteKM, xlab="T(dias)",ylab="S(t)", lty=1:2, col = 1:2) 
+legend("topright", bty = "n", lty = 1:2, col = 1:2,
+legend = sprintf("clinic %d", 1:2))
+```
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+coefExp <- coef(TFAExp1)
+# Sclinica1(t) = Sclinica2(2,35t) 
+exp(coefExp[2])
+# A mudança na dose aumentou ligeiramente o tempo até o evento
+#Sdose(t) = Sdose+1(1,02t)
+exp(coefExp[3])
+```
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = FALSE}
+coefTP <- -coef(TFAExp1)/TFAExp1$scale
+coefTP
+cbind(coefExp, coefTP)
+```
+
+---
+
+layout: true
+# Modelo TFA Exponencial - Previsões
+
+---
+
+`r chunk_reveal("ex_9")`
+
+```{r ex_9, include = FALSE}
+novosdados <- data.frame(clinic = c("1", "2"),
+                         prison = c("no", "no"), dose = c(60, 60))
+previs <- predict(TFAExp1, type = "quantile", 
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs <- predict(TFAExp1, type = "quantile", 
+                  newdata = novosdados, p = 0.7)
+previs
+previs[2]/previs[1]
+```
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
