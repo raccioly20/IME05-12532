@@ -111,7 +111,7 @@ summary(TFAExp1)
 `r chunk_reveal("ex_5")`
 
 ```{r ex_5, include = FALSE}
-TPCox <- coxph(Surv(survt, status) ~ clinic + dose, data=dados)
+TPCox <- coxph(Surv(survt, status) ~ clinic + dose, data=dados, ties = "exact")
 summary(TPCox)
 ```
 
@@ -138,16 +138,6 @@ exp(coefExp[2])
 # A mudança na dose aumentou ligeiramente o tempo até o evento
 #Sdose(t) = Sdose+1(1,02t)
 exp(coefExp[3])
-```
-
----
-
-`r chunk_reveal("ex_8")`
-
-```{r ex_8, include = FALSE}
-coefTP <- -coef(TFAExp1)/TFAExp1$scale
-coefTP
-cbind(coefExp, coefTP)
 ```
 
 ---

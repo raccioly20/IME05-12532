@@ -423,7 +423,7 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-*TPCox &lt;- coxph(Surv(survt, status) ~ clinic + dose, data=dados)
+*TPCox &lt;- coxph(Surv(survt, status) ~ clinic + dose, data=dados, ties = "exact")
 ```
 ]
  
@@ -438,7 +438,7 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-TPCox &lt;- coxph(Surv(survt, status) ~ clinic + dose, data=dados)
+TPCox &lt;- coxph(Surv(survt, status) ~ clinic + dose, data=dados, ties = "exact")
 *summary(TPCox)
 ```
 ]
@@ -447,24 +447,25 @@ TPCox &lt;- coxph(Surv(survt, status) ~ clinic + dose, data=dados)
 
 ```
 Call:
-coxph(formula = Surv(survt, status) ~ clinic + dose, data = dados)
+coxph(formula = Surv(survt, status) ~ clinic + dose, data = dados, 
+    ties = "exact")
 
   n= 238, number of events= 150 
 
             coef exp(coef)  se(coef)      z Pr(&gt;|z|)    
-clinic -0.950878  0.386402  0.212079 -4.484 7.34e-06 ***
-dose   -0.034327  0.966255  0.006274 -5.471 4.47e-08 ***
+clinic -0.951742  0.386068  0.212234 -4.484 7.31e-06 ***
+dose   -0.034423  0.966162  0.006283 -5.479 4.28e-08 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
        exp(coef) exp(-coef) lower .95 upper .95
-clinic    0.3864      2.588    0.2550    0.5855
-dose      0.9663      1.035    0.9544    0.9782
+clinic    0.3861      2.590    0.2547    0.5852
+dose      0.9662      1.035    0.9543    0.9781
 
 Concordance= 0.659  (se = 0.025 )
-Likelihood ratio test= 60.79  on 2 df,   p=6e-14
-Wald test            = 52.68  on 2 df,   p=4e-12
-Score (logrank) test = 54.25  on 2 df,   p=2e-12
+Likelihood ratio test= 60.86  on 2 df,   p=6e-14
+Wald test            = 52.72  on 2 df,   p=4e-12
+Score (logrank) test = 54.3  on 2 df,   p=2e-12
 ```
 ]
 
@@ -704,101 +705,6 @@ exp(coefExp[2])
   font-size: 80%
 }
 .panel3-ex_7-auto {
-  color: black;
-  width: NA%;
-  hight: 33%;
-  float: left;
-  padding-left: 1%;
-  font-size: 80%
-}
-&lt;/style&gt;
-
-
-
-
-
----
-
-count: false
- 
-
-.panel1-ex_8-auto[
-
-```r
-*coefTP &lt;- -coef(TFAExp1)/TFAExp1$scale
-```
-]
- 
-.panel2-ex_8-auto[
-
-]
-
----
-count: false
- 
-
-.panel1-ex_8-auto[
-
-```r
-coefTP &lt;- -coef(TFAExp1)/TFAExp1$scale
-*coefTP
-```
-]
- 
-.panel2-ex_8-auto[
-
-```
-(Intercept)      clinic        dose 
--3.64522358 -0.85493921 -0.02824693 
-```
-]
-
----
-count: false
- 
-
-.panel1-ex_8-auto[
-
-```r
-coefTP &lt;- -coef(TFAExp1)/TFAExp1$scale
-coefTP
-*cbind(coefExp, coefTP)
-```
-]
- 
-.panel2-ex_8-auto[
-
-```
-(Intercept)      clinic        dose 
--3.64522358 -0.85493921 -0.02824693 
-```
-
-```
-               coefExp      coefTP
-(Intercept) 3.64522358 -3.64522358
-clinic      0.85493921 -0.85493921
-dose        0.02824693 -0.02824693
-```
-]
-
-&lt;style&gt;
-.panel1-ex_8-auto {
-  color: black;
-  width: 38.6060606060606%;
-  hight: 32%;
-  float: left;
-  padding-left: 1%;
-  font-size: 80%
-}
-.panel2-ex_8-auto {
-  color: black;
-  width: 59.3939393939394%;
-  hight: 32%;
-  float: left;
-  padding-left: 1%;
-  font-size: 80%
-}
-.panel3-ex_8-auto {
   color: black;
   width: NA%;
   hight: 33%;
