@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Análise de Sobrevivência</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ricardo Accioly" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Análise de Sobrevivência
+## Modelos Paramétricos TFA (AFT)
+### Ricardo Accioly
+
+---
+
+
+
+
+
+# Modelos TFA
+
+--
+
+
+O conjunto de dados carregados a seguir são de 238 pacientes viciados com heroína.
+
+
+--
+
+Os pacientes foram tratados em duas clínicas (1 e 2), além disso foram coletadas informações sobre dose de medicamento ministrado no tratamento e se o paciente já havia sido preso ou não.
+
+--
+
+Os tempos (`survt`) são em dias e o evento analisado foi o tempo até a saída da clínica (status=1) ou o tempo até o término de estudo (tempo censurado (status=0).
+
+- id:	Identificação do paciente
+- clinic: clinica em que ocorreu o tratamento
+- survt:	tempo até a saída da clínica (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- prison: 0= se nunca foi preso e 1= se já foi preso
+- dose: dose do medicamento ministradp
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+*library(survival)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+*library(readxl)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+library(readxl)
+*dados &lt;- read_xlsx("heroina.xlsx", col_names = TRUE )
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+library(readxl)
+dados &lt;- read_xlsx("heroina.xlsx", col_names = TRUE )
+*summary(dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+```
+       id             clinic          status           survt       
+ Min.   :  1.00   Min.   :1.000   Min.   :0.0000   Min.   :   2.0  
+ 1st Qu.: 65.25   1st Qu.:1.000   1st Qu.:0.0000   1st Qu.: 171.2  
+ Median :131.50   Median :1.000   Median :1.0000   Median : 367.5  
+ Mean   :134.13   Mean   :1.315   Mean   :0.6303   Mean   : 402.6  
+ 3rd Qu.:205.75   3rd Qu.:2.000   3rd Qu.:1.0000   3rd Qu.: 585.5  
+ Max.   :266.00   Max.   :2.000   Max.   :1.0000   Max.   :1076.0  
+     prison            dose      
+ Min.   :0.0000   Min.   : 20.0  
+ 1st Qu.:0.0000   1st Qu.: 50.0  
+ Median :0.0000   Median : 60.0  
+ Mean   :0.4664   Mean   : 60.4  
+ 3rd Qu.:1.0000   3rd Qu.: 70.0  
+ Max.   :1.0000   Max.   :110.0  
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+*nrow(dados)
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 238
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+nrow(dados)
+*sum(complete.cases(dados))
+```
+]
+ 
+.panel2-ex_2-auto[
+
+```
+[1] 238
+```
+
+```
+[1] 238
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Exponencial
+
+---
+
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+*ajustExp &lt;- survreg(Surv(survt,status)~1,dist='exponential', data=dados)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustExp &lt;- survreg(Surv(survt,status)~1,dist='exponential', data=dados)
+*ajustExp
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "exponential")
+
+Coefficients:
+(Intercept) 
+   6.459508 
+
+Scale fixed at 1 
+
+Loglik(model)= -1118.9   Loglik(intercept only)= -1118.9
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajustExp &lt;- survreg(Surv(survt,status)~1,dist='exponential', data=dados)
+ajustExp
+*alfa &lt;- exp(ajustExp$coefficients[1])
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "exponential")
+
+Coefficients:
+(Intercept) 
+   6.459508 
+
+Scale fixed at 1 
+
+Loglik(model)= -1118.9   Loglik(intercept only)= -1118.9
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Weibull
+
+---
+
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+*ajustWei &lt;- survreg(Surv(survt, status)~1,dist='weibull', data=dados)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(survt, status)~1,dist='weibull', data=dados)
+*ajustWei
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   6.425148 
+
+Scale= 0.8153819 
+
+Loglik(model)= -1114.9   Loglik(intercept only)= -1114.9
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(survt, status)~1,dist='weibull', data=dados)
+ajustWei
+*alfaw &lt;- exp(ajustWei$coefficients[1])
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   6.425148 
+
+Scale= 0.8153819 
+
+Loglik(model)= -1114.9   Loglik(intercept only)= -1114.9
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(survt, status)~1,dist='weibull', data=dados)
+ajustWei
+alfaw &lt;- exp(ajustWei$coefficients[1])
+*betaw &lt;- 1/ajustWei$scale
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "weibull")
+
+Coefficients:
+(Intercept) 
+   6.425148 
+
+Scale= 0.8153819 
+
+Loglik(model)= -1114.9   Loglik(intercept only)= -1114.9
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Lognormal
+
+---
+
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+*ajustLog &lt;- survreg(Surv(survt,status)~1,dist='lognorm', data=dados)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(survt,status)~1,dist='lognorm', data=dados)
+*ajustLog
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   6.059725 
+
+Scale= 1.210284 
+
+Loglik(model)= -1123.7   Loglik(intercept only)= -1123.7
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(survt,status)~1,dist='lognorm', data=dados)
+ajustLog
+*mu &lt;- ajustLog$icoef[1]
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   6.059725 
+
+Scale= 1.210284 
+
+Loglik(model)= -1123.7   Loglik(intercept only)= -1123.7
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(survt,status)~1,dist='lognorm', data=dados)
+ajustLog
+mu &lt;- ajustLog$icoef[1]
+*sigma &lt;- exp(ajustLog$icoef[2])
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   6.059725 
+
+Scale= 1.210284 
+
+Loglik(model)= -1123.7   Loglik(intercept only)= -1123.7
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Loglogístico
+
+---
+
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+*ajustLogl &lt;- survreg(Surv(survt,status)~1, data=dados, dist='loglogistic')
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajustLogl &lt;- survreg(Surv(survt,status)~1, data=dados, dist='loglogistic')
+*ajustLogl
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+    6.09544 
+
+Scale= 0.6637981 
+
+Loglik(model)= -1120   Loglik(intercept only)= -1120
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajustLogl &lt;- survreg(Surv(survt,status)~1, data=dados, dist='loglogistic')
+ajustLogl
+*mu1 &lt;- ajustLogl$icoef[1]
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+    6.09544 
+
+Scale= 0.6637981 
+
+Loglik(model)= -1120   Loglik(intercept only)= -1120
+n= 238 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+ajustLogl &lt;- survreg(Surv(survt,status)~1, data=dados, dist='loglogistic')
+ajustLogl
+mu1 &lt;- ajustLogl$icoef[1]
+*sigma1 &lt;- exp(ajustLogl$icoef[2])
+```
+]
+ 
+.panel2-ex_6-auto[
+
+```
+Call:
+survreg(formula = Surv(survt, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+    6.09544 
+
+Scale= 0.6637981 
+
+Loglik(model)= -1120   Loglik(intercept only)= -1120
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_6-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+layout: true
+# Comparação dos Modelos 
+
+---
+
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+*ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+*tempo &lt;- ekm$time
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+*st &lt;- ekm$surv
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+*ste &lt;- exp(-tempo/alfa)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+*stw &lt;- exp(-(tempo/alfaw)^betaw)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+*stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+*stll &lt;- plogis((-log(tempo) + mu1)/sigma1)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+ekm &lt;- survfit(Surv(survt,status)~1, data=dados)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+stll &lt;- plogis((-log(tempo) + mu1)/sigma1)
+*knitr::kable(head(cbind(tempo,st,ste,stw,stln,stll),15))
+```
+]
+ 
+.panel2-ex_7-auto[
+
+| tempo|        st|       ste|       stw|      stln|      stll|
+|-----:|---------:|---------:|---------:|---------:|---------:|
+|     2| 1.0000000| 0.9968738| 0.9991153| 0.9999954| 0.9997080|
+|     7| 0.9957627| 0.9891009| 0.9958947| 0.9996619| 0.9980756|
+|    13| 0.9915254| 0.9798534| 0.9912492| 0.9980588| 0.9951244|
+|    17| 0.9872881| 0.9737364| 0.9878608| 0.9961610| 0.9927140|
+|    19| 0.9830508| 0.9706923| 0.9860991| 0.9949737| 0.9913963|
+|    26| 0.9788136| 0.9601126| 0.9796444| 0.9896895| 0.9862708|
+|    28| 0.9788136| 0.9571111| 0.9777293| 0.9878899| 0.9846741|
+|    29| 0.9745393| 0.9556138| 0.9767614| 0.9869468| 0.9838555|
+|    30| 0.9702650| 0.9541189| 0.9757869| 0.9859760| 0.9830239|
+|    33| 0.9659907| 0.9496482| 0.9728257| 0.9829067| 0.9804540|
+|    35| 0.9574421| 0.9466794| 0.9708222| 0.9807385| 0.9786809|
+|    37| 0.9531678| 0.9437198| 0.9687968| 0.9784805| 0.9768624|
+|    41| 0.9446192| 0.9378285| 0.9646851| 0.9737197| 0.9730969|
+|    47| 0.9403449| 0.9290603| 0.9583814| 0.9660499| 0.9671529|
+|    49| 0.9360706| 0.9261559| 0.9562475| 0.9633723| 0.9650990|
+]
+
+&lt;style&gt;
+.panel1-ex_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+*par(mfrow=c(1,4))
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+*plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): Weibull")
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): log-normal")
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_07_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stll,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)),
+*    xlab = "S(t): Kaplan-Meier", ylab="S(t): loglogística")
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_08_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stll,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)),
+     xlab = "S(t): Kaplan-Meier", ylab="S(t): loglogística")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_09_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  Comparação dos Modelos 2 
+
+---
+
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+*par(mfrow=c(1,3))
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+*tab.np &lt;- summary(ekm)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+tab.np &lt;- summary(ekm)
+*invst1 &lt;- qnorm(tab.np$surv)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+*invst2 &lt;- qlogis(tab.np$surv)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+invst2 &lt;- qlogis(tab.np$surv)
+*plot(log(tab.np$time), log(-log(tab.np$surv)),
+*    xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+```
+]
+ 
+.panel2-ex_9-auto[
+&lt;img src="index_files/figure-html/ex_9_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+invst2 &lt;- qlogis(tab.np$surv)
+plot(log(tab.np$time), log(-log(tab.np$surv)),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+*plot(log(tab.np$time), invst1,
+*    xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+```
+]
+ 
+.panel2-ex_9-auto[
+&lt;img src="index_files/figure-html/ex_9_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+par(mfrow=c(1,3))
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+invst2 &lt;- qlogis(tab.np$surv)
+plot(log(tab.np$time), log(-log(tab.np$surv)),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+plot(log(tab.np$time), invst1,
+     xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+*plot(log(tab.np$time), invst2,
+*    xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
+```
+]
+ 
+.panel2-ex_9-auto[
+&lt;img src="index_files/figure-html/ex_9_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_9-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_9-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_9-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Weibull
+
+---
+
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+*TFAWei &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+*                  dist = "weibull",
+*                  data=dados)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_13-auto[
+
+```r
+TFAWei &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "weibull",
+                   data=dados)
+*summary(TFAWei)
+```
+]
+ 
+.panel2-ex_13-auto[
+
+```
+
+Call:
+survreg(formula = Surv(survt, status) ~ clinic + factor(prison) + 
+    dose, data = dados, dist = "weibull")
+                   Value Std. Error     z       p
+(Intercept)      4.10485    0.32806 12.51 &lt; 2e-16
+clinic           0.70904    0.15722  4.51 6.5e-06
+factor(prison)1 -0.22947    0.12079 -1.90   0.057
+dose             0.02443    0.00459  5.32 1.0e-07
+Log(scale)      -0.31495    0.06756 -4.66 3.1e-06
+
+Scale= 0.73 
+
+Weibull distribution
+Loglik(model)= -1084.5   Loglik(intercept only)= -1114.9
+	Chisq= 60.89 on 3 degrees of freedom, p= 3.8e-13 
+Number of Newton-Raphson Iterations: 7 
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_13-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_13-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_13-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Weibull - Previsões
+
+---
+
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+*novosdados &lt;- data.frame(clinic = c("1", "2"),
+*                        prison = factor(c(0, 0)), dose = c(60, 60))
+```
+]
+ 
+.panel2-ex_14-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+*previs &lt;- predict(TFAWei, type = "quantile",
+*                 newdata = novosdados, p = 0.5)
+```
+]
+ 
+.panel2-ex_14-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+*previs
+```
+]
+ 
+.panel2-ex_14-auto[
+
+```
+       1        2 
+200.9142 408.2661 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_14-auto[
+
+```
+       1        2 
+200.9142 408.2661 
+```
+
+```
+       2 
+2.032042 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+*previs &lt;- predict(TFAWei, type = "quantile",
+*                 newdata = novosdados, p = 0.7)
+```
+]
+ 
+.panel2-ex_14-auto[
+
+```
+       1        2 
+200.9142 408.2661 
+```
+
+```
+       2 
+2.032042 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+*previs
+```
+]
+ 
+.panel2-ex_14-auto[
+
+```
+       1        2 
+200.9142 408.2661 
+```
+
+```
+       2 
+2.032042 
+```
+
+```
+       1        2 
+300.6186 610.8697 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_14-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFAWei, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_14-auto[
+
+```
+       1        2 
+200.9142 408.2661 
+```
+
+```
+       2 
+2.032042 
+```
+
+```
+       1        2 
+300.6186 610.8697 
+```
+
+```
+       2 
+2.032042 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_14-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_14-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_14-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+*library(car)
+```
+]
+ 
+.panel2-ex_15-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+library(car)
+*par(mfrow = c(1, 2), cex = 0.6)
+```
+]
+ 
+.panel2-ex_15-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+*pred.lin &lt;- predict(TFAWei, type = "lp")[dados$status == 1]
+```
+]
+ 
+.panel2-ex_15-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFAWei, type = "lp")[dados$status == 1]
+*log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+```
+]
+ 
+.panel2-ex_15-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFAWei, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+*plot(pred.lin, log.resid, main = "Grafico TA",
+*xlab = "log(valores ajustados)", ylab = "log(residuos)")
+```
+]
+ 
+.panel2-ex_15-auto[
+&lt;img src="index_files/figure-html/ex_15_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_15-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFAWei, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+*qqPlot(exp(log.resid), dist = "weibull",
+*shape = 1/TFAWei$scale,
+*main = "Grafico Q-Q", xlab = "Quantis teoricos Weibull", ylab = "Quantis empiricos")
+```
+]
+ 
+.panel2-ex_15-auto[
+&lt;img src="index_files/figure-html/ex_15_auto_06_output-1.png" width="100%" /&gt;
+
+```
+[1] 69  8
+```
+]
+
+&lt;style&gt;
+.panel1-ex_15-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_15-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_15-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Lognormal
+
+---
+
+count: false
+ 
+
+.panel1-ex_16-auto[
+
+```r
+*TFALn &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+*                  dist = "lognormal",
+*                  data=dados)
+```
+]
+ 
+.panel2-ex_16-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_16-auto[
+
+```r
+TFALn &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "lognormal",
+                   data=dados)
+*summary(TFALn)
+```
+]
+ 
+.panel2-ex_16-auto[
+
+```
+
+Call:
+survreg(formula = Surv(survt, status) ~ clinic + factor(prison) + 
+    dose, data = dados, dist = "lognormal")
+                   Value Std. Error     z      p
+(Intercept)      3.40684    0.39769  8.57 &lt;2e-16
+clinic           0.57649    0.17648  3.27 0.0011
+factor(prison)1 -0.30904    0.15431 -2.00 0.0452
+dose             0.03367    0.00568  5.93  3e-09
+Log(scale)       0.07476    0.05930  1.26 0.2074
+
+Scale= 1.08 
+
+Log Normal distribution
+Loglik(model)= -1097.8   Loglik(intercept only)= -1123.7
+	Chisq= 51.85 on 3 degrees of freedom, p= 3.2e-11 
+Number of Newton-Raphson Iterations: 4 
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_16-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_16-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_16-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Lognormal - Previsões
+
+---
+
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+*novosdados &lt;- data.frame(clinic = c("1", "2"),
+*                        prison = factor(c(0, 0)), dose = c(60, 60))
+```
+]
+ 
+.panel2-ex_17-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+*previs &lt;- predict(TFALn, type = "quantile",
+*                 newdata = novosdados, p = 0.5)
+```
+]
+ 
+.panel2-ex_17-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+*previs
+```
+]
+ 
+.panel2-ex_17-auto[
+
+```
+       1        2 
+227.5381 404.9681 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_17-auto[
+
+```
+       1        2 
+227.5381 404.9681 
+```
+
+```
+       2 
+1.779782 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+*previs &lt;- predict(TFALn, type = "quantile",
+*                 newdata = novosdados, p = 0.7)
+```
+]
+ 
+.panel2-ex_17-auto[
+
+```
+       1        2 
+227.5381 404.9681 
+```
+
+```
+       2 
+1.779782 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+*previs
+```
+]
+ 
+.panel2-ex_17-auto[
+
+```
+       1        2 
+227.5381 404.9681 
+```
+
+```
+       2 
+1.779782 
+```
+
+```
+       1        2 
+400.3836 712.5953 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_17-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFALn, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_17-auto[
+
+```
+       1        2 
+227.5381 404.9681 
+```
+
+```
+       2 
+1.779782 
+```
+
+```
+       1        2 
+400.3836 712.5953 
+```
+
+```
+       2 
+1.779782 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_17-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_17-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_17-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+*library(car)
+```
+]
+ 
+.panel2-ex_18-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+library(car)
+*par(mfrow = c(1, 2), cex = 0.6)
+```
+]
+ 
+.panel2-ex_18-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+*pred.lin &lt;- predict(TFALn, type = "lp")[dados$status == 1]
+```
+]
+ 
+.panel2-ex_18-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALn, type = "lp")[dados$status == 1]
+*log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+```
+]
+ 
+.panel2-ex_18-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALn, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+*plot(pred.lin, log.resid, main = "Grafico TA",
+*xlab = "log(valores ajustados)", ylab = "log(residuos)")
+```
+]
+ 
+.panel2-ex_18-auto[
+&lt;img src="index_files/figure-html/ex_18_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_18-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALn, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+*qqPlot(log.resid, dist = "norm", sd=TFALn$scale,
+*main = "Grafico Q-Q", xlab = "Quantis teoricos Lognormal", ylab = "Quantis empiricos")
+```
+]
+ 
+.panel2-ex_18-auto[
+&lt;img src="index_files/figure-html/ex_18_auto_06_output-1.png" width="100%" /&gt;
+
+```
+[1]  86 110
+```
+]
+
+&lt;style&gt;
+.panel1-ex_18-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_18-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_18-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA LogLogistica
+
+---
+
+count: false
+ 
+
+.panel1-ex_19-auto[
+
+```r
+*TFALl &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+*                  dist = "loglogistic",
+*                  data=dados)
+```
+]
+ 
+.panel2-ex_19-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_19-auto[
+
+```r
+TFALl &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "loglogistic",
+                   data=dados)
+*summary(TFALl)
+```
+]
+ 
+.panel2-ex_19-auto[
+
+```
+
+Call:
+survreg(formula = Surv(survt, status) ~ clinic + factor(prison) + 
+    dose, data = dados, dist = "loglogistic")
+                   Value Std. Error     z       p
+(Intercept)      3.56327    0.38945  9.15 &lt; 2e-16
+clinic           0.58060    0.17157  3.38 0.00071
+factor(prison)1 -0.29127    0.14396 -2.02 0.04305
+dose             0.03161    0.00552  5.73 1.0e-08
+Log(scale)      -0.53314    0.06863 -7.77 7.9e-15
+
+Scale= 0.587 
+
+Log logistic distribution
+Loglik(model)= -1093.9   Loglik(intercept only)= -1120
+	Chisq= 52.18 on 3 degrees of freedom, p= 2.7e-11 
+Number of Newton-Raphson Iterations: 4 
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_19-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_19-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_19-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Loglogistica - Previsões
+
+---
+
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+*novosdados &lt;- data.frame(clinic = c("1", "2"),
+*                        prison = factor(c(0, 0)), dose = c(60, 60))
+```
+]
+ 
+.panel2-ex_20-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+*previs &lt;- predict(TFALl, type = "quantile",
+*                 newdata = novosdados, p = 0.5)
+```
+]
+ 
+.panel2-ex_20-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+*previs
+```
+]
+ 
+.panel2-ex_20-auto[
+
+```
+       1        2 
+235.1125 420.1710 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_20-auto[
+
+```
+       1        2 
+235.1125 420.1710 
+```
+
+```
+       2 
+1.787106 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+*previs &lt;- predict(TFALl, type = "quantile",
+*                 newdata = novosdados, p = 0.7)
+```
+]
+ 
+.panel2-ex_20-auto[
+
+```
+       1        2 
+235.1125 420.1710 
+```
+
+```
+       2 
+1.787106 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+*previs
+```
+]
+ 
+.panel2-ex_20-auto[
+
+```
+       1        2 
+235.1125 420.1710 
+```
+
+```
+       2 
+1.787106 
+```
+
+```
+       1        2 
+386.5353 690.7797 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_20-auto[
+
+```r
+novosdados &lt;- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs &lt;- predict(TFALl, type = "quantile",
+                  newdata = novosdados, p = 0.7)
+previs
+*previs[2]/previs[1]
+```
+]
+ 
+.panel2-ex_20-auto[
+
+```
+       1        2 
+235.1125 420.1710 
+```
+
+```
+       2 
+1.787106 
+```
+
+```
+       1        2 
+386.5353 690.7797 
+```
+
+```
+       2 
+1.787106 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_20-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_20-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_20-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+*library(car)
+```
+]
+ 
+.panel2-ex_21-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+library(car)
+*par(mfrow = c(1, 2), cex = 0.6)
+```
+]
+ 
+.panel2-ex_21-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+*pred.lin &lt;- predict(TFALl, type = "lp")[dados$status == 1]
+```
+]
+ 
+.panel2-ex_21-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALl, type = "lp")[dados$status == 1]
+*log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+```
+]
+ 
+.panel2-ex_21-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALl, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+*plot(pred.lin, log.resid, main = "Grafico TA",
+*xlab = "log(valores ajustados)", ylab = "log(residuos)")
+```
+]
+ 
+.panel2-ex_21-auto[
+&lt;img src="index_files/figure-html/ex_21_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_21-auto[
+
+```r
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin &lt;- predict(TFALl, type = "lp")[dados$status == 1]
+log.resid &lt;- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+*qqPlot(log.resid, dist = "logis",
+*main = "Grafico Q-Q", xlab = "Quantis teoricos Logistica", ylab = "Quantis empiricos")
+```
+]
+ 
+.panel2-ex_21-auto[
+&lt;img src="index_files/figure-html/ex_21_auto_06_output-1.png" width="100%" /&gt;
+
+```
+[1]  86 110
+```
+]
+
+&lt;style&gt;
+.panel1-ex_21-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_21-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_21-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+# Modelo TFA Weibull - Seleção de Modelo
+
+---
+
+count: false
+ 
+
+.panel1-ex_22-auto[
+
+```r
+*library(MASS)
+```
+]
+ 
+.panel2-ex_22-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_22-auto[
+
+```r
+library(MASS)
+*TFAWei &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+*                  dist = "weibull",
+*                  data=dados)
+```
+]
+ 
+.panel2-ex_22-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_22-auto[
+
+```r
+library(MASS)
+TFAWei &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "weibull",
+                   data=dados)
+*TFAWei_AIC &lt;- stepAIC(TFAWei, trace=FALSE)
+```
+]
+ 
+.panel2-ex_22-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_22-auto[
+
+```r
+library(MASS)
+TFAWei &lt;- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "weibull",
+                   data=dados)
+TFAWei_AIC &lt;- stepAIC(TFAWei, trace=FALSE)
+*summary(TFAWei_AIC)
+```
+]
+ 
+.panel2-ex_22-auto[
+
+```
+
+Call:
+survreg(formula = Surv(survt, status) ~ clinic + factor(prison) + 
+    dose, data = dados, dist = "weibull")
+                   Value Std. Error     z       p
+(Intercept)      4.10485    0.32806 12.51 &lt; 2e-16
+clinic           0.70904    0.15722  4.51 6.5e-06
+factor(prison)1 -0.22947    0.12079 -1.90   0.057
+dose             0.02443    0.00459  5.32 1.0e-07
+Log(scale)      -0.31495    0.06756 -4.66 3.1e-06
+
+Scale= 0.73 
+
+Weibull distribution
+Loglik(model)= -1084.5   Loglik(intercept only)= -1114.9
+	Chisq= 60.89 on 3 degrees of freedom, p= 3.8e-13 
+Number of Newton-Raphson Iterations: 7 
+n= 238 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_22-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_22-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_22-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "",
+"ratio": "16:9",
+"highlightStyle": "foundation",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

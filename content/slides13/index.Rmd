@@ -1,0 +1,418 @@
+---
+title: "Análise de Sobrevivência"
+subtitle: "Modelos Paramétricos TFA (AFT)"
+author: "Ricardo Accioly"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      slideNumberFormat: ""
+      ratio: 16:9
+      highlightStyle: "foundation"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 9, 
+                      fig.height= 5.5,  
+                      fig.retina = 3, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      comment = "", 
+                      cache = F, 
+                      out.width = "100%")
+library(flipbookr)
+library(tidyverse)
+```
+
+
+# Modelos TFA
+
+--
+
+
+O conjunto de dados carregados a seguir são de 238 pacientes viciados com heroína.
+
+
+--
+
+Os pacientes foram tratados em duas clínicas (1 e 2), além disso foram coletadas informações sobre dose de medicamento ministrado no tratamento e se o paciente já havia sido preso ou não.
+
+--
+
+Os tempos (`survt`) são em dias e o evento analisado foi o tempo até a saída da clínica (status=1) ou o tempo até o término de estudo (tempo censurado (status=0).
+
+- id:	Identificação do paciente
+- clinic: clinica em que ocorreu o tratamento
+- survt:	tempo até a saída da clínica (dias)
+- status:	censoring status 0=censored (censurado), 1=evento 
+- prison: 0= se nunca foi preso e 1= se já foi preso
+- dose: dose do medicamento ministradp
+
+---
+
+layout: true
+# Conhecendo os dados
+
+---
+
+`r chunk_reveal("ex_1")`
+
+```{r ex_1, include = FALSE}
+library(survival)
+library(readxl)
+dados <- read_xlsx("heroina.xlsx", col_names = TRUE )
+summary(dados)
+```
+
+---
+
+`r chunk_reveal("ex_2")`
+
+```{r ex_2, include = FALSE}
+nrow(dados)
+sum(complete.cases(dados))
+```
+
+---
+
+layout: true
+# Modelos Paramétricos - Exponencial
+
+---
+
+`r chunk_reveal("ex_3")`
+
+```{r ex_3, include = FALSE}
+ajustExp <- survreg(Surv(survt,status)~1,dist='exponential', data=dados)
+ajustExp
+alfa <- exp(ajustExp$coefficients[1])
+```
+
+---
+
+layout: true
+# Modelos Paramétricos - Weibull
+
+---
+
+`r chunk_reveal("ex_4")`
+
+```{r ex_4, include = FALSE}
+ajustWei <- survreg(Surv(survt, status)~1,dist='weibull', data=dados)
+ajustWei
+alfaw <- exp(ajustWei$coefficients[1])
+betaw <- 1/ajustWei$scale
+```
+
+
+---
+
+layout: true
+# Modelos Paramétricos - Lognormal
+
+---
+
+`r chunk_reveal("ex_5")`
+
+```{r ex_5, include = FALSE}
+ajustLog <- survreg(Surv(survt,status)~1,dist='lognorm', data=dados)
+ajustLog
+mu <- ajustLog$icoef[1]
+sigma <- exp(ajustLog$icoef[2])
+```
+
+---
+
+layout: true
+# Modelos Paramétricos - Loglogístico
+
+---
+
+`r chunk_reveal("ex_6")`
+
+```{r ex_6, include = FALSE}
+ajustLogl <- survreg(Surv(survt,status)~1, data=dados, dist='loglogistic')
+ajustLogl
+mu1 <- ajustLogl$icoef[1]
+sigma1 <- exp(ajustLogl$icoef[2])
+```
+
+---
+
+
+layout: true
+# Comparação dos Modelos 
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+ekm <- survfit(Surv(survt,status)~1, data=dados)
+tempo <- ekm$time
+st <- ekm$surv
+ste <- exp(-tempo/alfa)
+stw <- exp(-(tempo/alfaw)^betaw)
+stln <- pnorm((-log(tempo) + mu)/sigma)
+stll <- plogis((-log(tempo) + mu1)/sigma1)
+knitr::kable(head(cbind(tempo,st,ste,stw,stln,stll),15))
+```
+
+---
+
+layout: true
+#  Comparação dos Modelos  
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = F}
+par(mfrow=c(1,4))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stll,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), 
+     xlab = "S(t): Kaplan-Meier", ylab="S(t): loglogística")
+lines(c(0,1), c(0,1), type="l", lty=1)
+```
+
+---
+
+layout: true
+#  Comparação dos Modelos 2 
+
+---
+
+`r chunk_reveal("ex_9")`
+
+```{r ex_9, include = F}
+par(mfrow=c(1,3))
+tab.np <- summary(ekm)
+invst1 <- qnorm(tab.np$surv)
+invst2 <- qlogis(tab.np$surv) 
+plot(log(tab.np$time), log(-log(tab.np$surv)),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+plot(log(tab.np$time), invst1,
+     xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+plot(log(tab.np$time), invst2,
+     xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
+```
+
+---
+
+layout: true
+# Modelo TFA Weibull
+
+---
+
+`r chunk_reveal("ex_13")`
+
+```{r ex_13, include = FALSE}
+TFAWei <- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "weibull", 
+                   data=dados)
+summary(TFAWei)
+```
+
+---
+
+layout: true
+# Modelo TFA Weibull - Previsões
+
+---
+
+`r chunk_reveal("ex_14")`
+
+```{r ex_14, include = FALSE}
+novosdados <- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs <- predict(TFAWei, type = "quantile", 
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs <- predict(TFAWei, type = "quantile", 
+                  newdata = novosdados, p = 0.7)
+previs
+previs[2]/previs[1]
+```
+
+---
+
+`r chunk_reveal("ex_15")`
+
+```{r ex_15, include = FALSE}
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin <- predict(TFAWei, type = "lp")[dados$status == 1]
+log.resid <- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+qqPlot(exp(log.resid), dist = "weibull",
+shape = 1/TFAWei$scale,
+main = "Grafico Q-Q", xlab = "Quantis teoricos Weibull", ylab = "Quantis empiricos")
+```
+
+---
+
+layout: true
+# Modelo TFA Lognormal
+
+---
+
+`r chunk_reveal("ex_16")`
+
+```{r ex_16, include = FALSE}
+TFALn <- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "lognormal", 
+                   data=dados)
+summary(TFALn)
+```
+
+---
+
+layout: true
+# Modelo TFA Lognormal - Previsões
+
+---
+
+`r chunk_reveal("ex_17")`
+
+```{r ex_17, include = FALSE}
+novosdados <- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs <- predict(TFALn, type = "quantile", 
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs <- predict(TFALn, type = "quantile", 
+                  newdata = novosdados, p = 0.7)
+previs
+previs[2]/previs[1]
+```
+
+---
+
+`r chunk_reveal("ex_18")`
+
+```{r ex_18, include = FALSE}
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin <- predict(TFALn, type = "lp")[dados$status == 1]
+log.resid <- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+qqPlot(log.resid, dist = "norm", sd=TFALn$scale, 
+main = "Grafico Q-Q", xlab = "Quantis teoricos Lognormal", ylab = "Quantis empiricos")
+```
+
+---
+
+layout: true
+# Modelo TFA LogLogistica
+
+---
+
+`r chunk_reveal("ex_19")`
+
+```{r ex_19, include = FALSE}
+TFALl <- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "loglogistic", 
+                   data=dados)
+summary(TFALl)
+```
+
+---
+
+layout: true
+# Modelo TFA Loglogistica - Previsões
+
+---
+
+`r chunk_reveal("ex_20")`
+
+```{r ex_20, include = FALSE}
+novosdados <- data.frame(clinic = c("1", "2"),
+                         prison = factor(c(0, 0)), dose = c(60, 60))
+previs <- predict(TFALl, type = "quantile", 
+                  newdata = novosdados, p = 0.5)
+previs
+previs[2]/previs[1]
+previs <- predict(TFALl, type = "quantile", 
+                  newdata = novosdados, p = 0.7)
+previs
+previs[2]/previs[1]
+```
+
+---
+
+`r chunk_reveal("ex_21")`
+
+```{r ex_21, include = FALSE}
+library(car)
+par(mfrow = c(1, 2), cex = 0.6)
+pred.lin <- predict(TFALl, type = "lp")[dados$status == 1]
+log.resid <- log(dados$survt[dados$status == 1]) - pred.lin
+plot(pred.lin, log.resid, main = "Grafico TA",
+xlab = "log(valores ajustados)", ylab = "log(residuos)")
+qqPlot(log.resid, dist = "logis", 
+main = "Grafico Q-Q", xlab = "Quantis teoricos Logistica", ylab = "Quantis empiricos")
+```
+
+
+---
+
+layout: true
+# Modelo TFA Weibull - Seleção de Modelo
+
+---
+
+`r chunk_reveal("ex_22")`
+
+```{r ex_22, include = FALSE}
+library(MASS)
+TFAWei <- survreg(Surv(survt, status) ~ clinic + factor(prison) + dose,
+                   dist = "weibull", 
+                   data=dados)
+TFAWei_AIC <- stepAIC(TFAWei, trace=FALSE)
+summary(TFAWei_AIC)
+```
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+
