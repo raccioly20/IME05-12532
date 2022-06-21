@@ -4,7 +4,7 @@
     <title>Análise de Sobrevivência</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ricardo Accioly" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/hygge.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
@@ -13,9 +13,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Análise de Sobrevivência
+]
+.subtitle[
 ## Modelos não Paramétricos
+]
+.author[
 ### Ricardo Accioly
+]
 
 ---
 
@@ -121,7 +127,7 @@ count: false
 library(survival)
 tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
 status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
-*ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
+*dados &lt;- data.frame(tempos=tempo, status=status)
 ```
 ]
  
@@ -139,13 +145,33 @@ count: false
 library(survival)
 tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
 status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
-ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
+dados &lt;- data.frame(tempos=tempo, status=status)
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
+status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
+dados &lt;- data.frame(tempos=tempo, status=status)
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
 *plot(ajusteKM, xlab="Tempo (semanas)",ylab="S(t)", lty=2)
 ```
 ]
  
 .panel2-ex_1-auto[
-&lt;img src="index_files/figure-html/ex_1_auto_05_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_1_auto_06_output-1.png" width="432" /&gt;
 ]
 
 ---
@@ -158,14 +184,15 @@ count: false
 library(survival)
 tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
 status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
-ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
+dados &lt;- data.frame(tempos=tempo, status=status)
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
 plot(ajusteKM, xlab="Tempo (semanas)",ylab="S(t)", lty=2)
 *legend("topright","6-MP", lty = 2)
 ```
 ]
  
 .panel2-ex_1-auto[
-&lt;img src="index_files/figure-html/ex_1_auto_06_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_1_auto_07_output-1.png" width="432" /&gt;
 ]
 
 &lt;style&gt;
@@ -240,7 +267,7 @@ count: false
 ```r
 tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
 status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
-*ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
+*dados &lt;- data.frame(tempos=tempo, status=status)
 ```
 ]
  
@@ -257,7 +284,26 @@ count: false
 ```r
 tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
 status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
-ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
+dados &lt;- data.frame(tempos=tempo, status=status)
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_2-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2-auto[
+
+```r
+tempo&lt;- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
+status&lt;- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
+dados &lt;- data.frame(tempos=tempo, status=status)
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
 *summary(ajusteKM)
 ```
 ]
@@ -265,7 +311,7 @@ ajusteKM &lt;- survfit(Surv(tempo, status) ~ 1)
 .panel2-ex_2-auto[
 
 ```
-Call: survfit(formula = Surv(tempo, status) ~ 1)
+Call: survfit(formula = Surv(tempos, status) ~ 1, data = dados)
 
  time n.risk n.event survival std.err lower 95% CI upper 95% CI
     6     21       3    0.857  0.0764        0.720        1.000
@@ -350,7 +396,7 @@ count: false
 ```r
 tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
 status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-*ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
+*dados2 &lt;- data.frame(tempos=tempo2, status=status2)
 ```
 ]
  
@@ -367,13 +413,32 @@ count: false
 ```r
 tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
 status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
+dados2 &lt;- data.frame(tempos=tempo2, status=status2)
+*ajusteKM2 &lt;- survfit(Surv(tempos, status) ~ 1, data=dados2)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
+status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+dados2 &lt;- data.frame(tempos=tempo2, status=status2)
+ajusteKM2 &lt;- survfit(Surv(tempos, status) ~ 1, data=dados2)
 *plot(ajusteKM2, xlab="t(semanas)",ylab="S(t)", lty=3)
 ```
 ]
  
 .panel2-ex_3-auto[
-&lt;img src="index_files/figure-html/ex_3_auto_04_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_3_auto_05_output-1.png" width="432" /&gt;
 ]
 
 ---
@@ -385,14 +450,15 @@ count: false
 ```r
 tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
 status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
+dados2 &lt;- data.frame(tempos=tempo2, status=status2)
+ajusteKM2 &lt;- survfit(Surv(tempos, status) ~ 1, data=dados2)
 plot(ajusteKM2, xlab="t(semanas)",ylab="S(t)", lty=3)
 *legend("topright","Placebo", lty = 3)
 ```
 ]
  
 .panel2-ex_3-auto[
-&lt;img src="index_files/figure-html/ex_3_auto_05_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_3_auto_06_output-1.png" width="432" /&gt;
 ]
 
 &lt;style&gt;
@@ -467,7 +533,7 @@ count: false
 ```r
 tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
 status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-*ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
+*dados2 &lt;- data.frame(tempos=tempo2, status=status2)
 ```
 ]
  
@@ -484,7 +550,26 @@ count: false
 ```r
 tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
 status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
+dados2 &lt;- data.frame(tempos=tempo2, status=status2)
+*ajusteKM2 &lt;- survfit(Surv(tempos, status) ~ 1, data=dados2)
+```
+]
+ 
+.panel2-ex_4-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+tempo2&lt;- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
+status2&lt;- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+dados2 &lt;- data.frame(tempos=tempo2, status=status2)
+ajusteKM2 &lt;- survfit(Surv(tempos, status) ~ 1, data=dados2)
 *summary(ajusteKM2)
 ```
 ]
@@ -492,7 +577,7 @@ ajusteKM2 &lt;- survfit(Surv(tempo2, status2) ~ 1)
 .panel2-ex_4-auto[
 
 ```
-Call: survfit(formula = Surv(tempo2, status2) ~ 1)
+Call: survfit(formula = Surv(tempos, status) ~ 1, data = dados2)
 
  time n.risk n.event survival std.err lower 95% CI upper 95% CI
     1     21       2   0.9048  0.0641      0.78754        1.000
@@ -607,7 +692,7 @@ count: false
 tempo2g &lt;- c(tempo,tempo2)
 status2g &lt;- c(status,status2)
 grupos &lt;- c(rep(1,21),rep(2,21))
-*ajusteKM3 &lt;- survfit(Surv(tempo2g, status2g) ~ grupos)
+*dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
 ```
 ]
  
@@ -625,13 +710,33 @@ count: false
 tempo2g &lt;- c(tempo,tempo2)
 status2g &lt;- c(status,status2)
 grupos &lt;- c(rep(1,21),rep(2,21))
-ajusteKM3 &lt;- survfit(Surv(tempo2g, status2g) ~ grupos)
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+*ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
+```
+]
+ 
+.panel2-ex_5-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
 *plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=2:3)
 ```
 ]
  
 .panel2-ex_5-auto[
-&lt;img src="index_files/figure-html/ex_5_auto_05_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_5_auto_06_output-1.png" width="432" /&gt;
 ]
 
 ---
@@ -644,14 +749,15 @@ count: false
 tempo2g &lt;- c(tempo,tempo2)
 status2g &lt;- c(status,status2)
 grupos &lt;- c(rep(1,21),rep(2,21))
-ajusteKM3 &lt;- survfit(Surv(tempo2g, status2g) ~ grupos)
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
 plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=2:3)
 *legend("topright",c("6-MP","Placebo"), lty = 2:3)
 ```
 ]
  
 .panel2-ex_5-auto[
-&lt;img src="index_files/figure-html/ex_5_auto_06_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_5_auto_07_output-1.png" width="432" /&gt;
 ]
 
 &lt;style&gt;
@@ -694,6 +800,96 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
+*tempo2g &lt;- c(tempo,tempo2)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+*status2g &lt;- c(status,status2)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+*grupos &lt;- c(rep(1,21),rep(2,21))
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+*dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+*ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
+```
+]
+ 
+.panel2-ex_6-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
 *summary(ajusteKM3)
 ```
 ]
@@ -701,7 +897,7 @@ count: false
 .panel2-ex_6-auto[
 
 ```
-Call: survfit(formula = Surv(tempo2g, status2g) ~ grupos)
+Call: survfit(formula = Surv(tempos, status) ~ grupos, data = dados3)
 
                 grupos=1 
  time n.risk n.event survival std.err lower 95% CI upper 95% CI
@@ -812,7 +1008,7 @@ count: false
 ```r
 library(survminer)
 dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
-*fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+*ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
 ```
 ]
  
@@ -829,8 +1025,8 @@ count: false
 ```r
 library(survminer)
 dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
-fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
-*ggsurvplot(fit4, data=dados)
+ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+*ggsurvplot(ajusteKM4, data=dados)
 ```
 ]
  
@@ -878,6 +1074,39 @@ count: false
 .panel1-ex_8-auto[
 
 ```r
+*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+*fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
 *ggsurvplot(
 * fit4,
 * data = dados,
@@ -896,7 +1125,7 @@ count: false
 ]
  
 .panel2-ex_8-auto[
-&lt;img src="index_files/figure-html/ex_8_auto_01_output-1.png" width="432" /&gt;
+&lt;img src="index_files/figure-html/ex_8_auto_03_output-1.png" width="432" /&gt;
 ]
 
 &lt;style&gt;
@@ -1007,6 +1236,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
