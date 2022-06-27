@@ -129,8 +129,9 @@ status2g <- c(status,status2)
 grupos <- c(rep(1,21),rep(2,21))
 dados3 <- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
 ajusteKM3 <- survfit(Surv(tempos, status) ~ grupos, data=dados3)
-plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=2:3) 
-legend("topright",c("6-MP","Placebo"), lty = 2:3)
+plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=1:2, 
+     col=c(1,4), conf.int=0.95) 
+legend("topright",c("6-MP","Placebo"), lty = 1:2, col=c(1,4))
 ```
 
 
@@ -153,15 +154,68 @@ summary(ajusteKM3)
 class: inverse, center, middle
 
 
+# Diferentes Tipos de Intervalo de Confiança
+
+
+---
+
+`r chunk_reveal("ex_7")`
+
+```{r ex_7, include = FALSE}
+tempo2g <- c(tempo,tempo2)
+status2g <- c(status,status2)
+grupos <- c(rep(1,21),rep(2,21))
+dados3 <- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM4 <- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="plain")
+# IC Pleno (Aproximação pela Normal)
+summary(ajusteKM4)
+```
+
+---
+
+`r chunk_reveal("ex_8")`
+
+```{r ex_8, include = FALSE}
+tempo2g <- c(tempo,tempo2)
+status2g <- c(status,status2)
+grupos <- c(rep(1,21),rep(2,21))
+dados3 <- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM5 <- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="log")
+# IC log - Padrão do R
+summary(ajusteKM5)
+```
+
+---
+
+`r chunk_reveal("ex_9")`
+
+```{r ex_9, include = FALSE}
+tempo2g <- c(tempo,tempo2)
+status2g <- c(status,status2)
+grupos <- c(rep(1,21),rep(2,21))
+dados3 <- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM6 <- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="log-log")
+# IC log-log - Kalbfleish-Prentice
+summary(ajusteKM6)
+```
+
+---
+
+class: inverse, center, middle
+
+
 # Vamos usar o pacote survminer para incrementar a visualização
 
 
 ---
 
 
-`r chunk_reveal("ex_7")`
+`r chunk_reveal("ex_10")`
 
-```{r ex_7, include = FALSE}
+```{r ex_10, include = FALSE}
 library(survminer)
 dados <- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
 ajusteKM4 <- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
@@ -171,9 +225,9 @@ ggsurvplot(ajusteKM4, data=dados)
 
 ---
 
-`r chunk_reveal("ex_8")`
+`r chunk_reveal("ex_11")`
 
-```{r ex_8, include = FALSE}
+```{r ex_11, include = FALSE}
 dados <- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
 fit4 <- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
 ggsurvplot(

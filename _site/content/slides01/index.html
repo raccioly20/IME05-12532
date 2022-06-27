@@ -731,7 +731,8 @@ status2g &lt;- c(status,status2)
 grupos &lt;- c(rep(1,21),rep(2,21))
 dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
 ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
-*plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=2:3)
+*plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=1:2,
+*    col=c(1,4), conf.int=0.95)
 ```
 ]
  
@@ -751,8 +752,9 @@ status2g &lt;- c(status,status2)
 grupos &lt;- c(rep(1,21),rep(2,21))
 dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
 ajusteKM3 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3)
-plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=2:3)
-*legend("topright",c("6-MP","Placebo"), lty = 2:3)
+plot(ajusteKM3, xlab="T(semanas)",ylab="S(t)", lty=1:2,
+     col=c(1,4), conf.int=0.95)
+*legend("topright",c("6-MP","Placebo"), lty = 1:2, col=c(1,4))
 ```
 ]
  
@@ -963,11 +965,10 @@ Call: survfit(formula = Surv(tempos, status) ~ grupos, data = dados3)
 class: inverse, center, middle
 
 
-# Vamos usar o pacote survminer para incrementar a visualização
+# Diferentes Tipos de Intervalo de Confiança
 
 
 ---
-
 
 count: false
  
@@ -975,7 +976,7 @@ count: false
 .panel1-ex_7-auto[
 
 ```r
-*library(survminer)
+*tempo2g &lt;- c(tempo,tempo2)
 ```
 ]
  
@@ -990,8 +991,8 @@ count: false
 .panel1-ex_7-auto[
 
 ```r
-library(survminer)
-*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+tempo2g &lt;- c(tempo,tempo2)
+*status2g &lt;- c(status,status2)
 ```
 ]
  
@@ -1006,9 +1007,9 @@ count: false
 .panel1-ex_7-auto[
 
 ```r
-library(survminer)
-dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
-*ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+*grupos &lt;- c(rep(1,21),rep(2,21))
 ```
 ]
  
@@ -1023,15 +1024,107 @@ count: false
 .panel1-ex_7-auto[
 
 ```r
-library(survminer)
-dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
-ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
-*ggsurvplot(ajusteKM4, data=dados)
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+*dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
 ```
 ]
  
 .panel2-ex_7-auto[
-&lt;img src="index_files/figure-html/ex_7_auto_04_output-1.png" width="432" /&gt;
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+*ajusteKM4 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+*                    conf.type="plain")
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM4 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="plain")
+*# IC Pleno (Aproximação pela Normal)  # IC Pleno (Aproximação pela Normal)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM4 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="plain")
+# IC Pleno (Aproximação pela Normal)  # IC Pleno (Aproximação pela Normal)
+*summary(ajusteKM4)
+```
+]
+ 
+.panel2-ex_7-auto[
+
+```
+Call: survfit(formula = Surv(tempos, status) ~ grupos, data = dados3, 
+    conf.type = "plain")
+
+                grupos=1 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    6     21       3    0.857  0.0764        0.707        1.000
+    7     17       1    0.807  0.0869        0.636        0.977
+   10     15       1    0.753  0.0963        0.564        0.942
+   13     12       1    0.690  0.1068        0.481        0.900
+   16     11       1    0.627  0.1141        0.404        0.851
+   22      7       1    0.538  0.1282        0.286        0.789
+   23      6       1    0.448  0.1346        0.184        0.712
+
+                grupos=2 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    1     21       2   0.9048  0.0641       0.7792        1.000
+    2     19       2   0.8095  0.0857       0.6416        0.977
+    3     17       1   0.7619  0.0929       0.5797        0.944
+    4     16       2   0.6667  0.1029       0.4650        0.868
+    5     14       2   0.5714  0.1080       0.3598        0.783
+    8     12       4   0.3810  0.1060       0.1733        0.589
+   11      8       2   0.2857  0.0986       0.0925        0.479
+   12      6       2   0.1905  0.0857       0.0225        0.358
+   15      4       1   0.1429  0.0764       0.0000        0.293
+   17      3       1   0.0952  0.0641       0.0000        0.221
+   22      2       1   0.0476  0.0465       0.0000        0.139
+   23      1       1   0.0000     NaN          NaN          NaN
+```
 ]
 
 &lt;style&gt;
@@ -1065,7 +1158,6 @@ ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type=
 
 
 
-
 ---
 
 count: false
@@ -1074,7 +1166,7 @@ count: false
 .panel1-ex_8-auto[
 
 ```r
-*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+*tempo2g &lt;- c(tempo,tempo2)
 ```
 ]
  
@@ -1087,6 +1179,452 @@ count: false
  
 
 .panel1-ex_8-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+*status2g &lt;- c(status,status2)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+*grupos &lt;- c(rep(1,21),rep(2,21))
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+*dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+*ajusteKM5 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+*                    conf.type="log")
+```
+]
+ 
+.panel2-ex_8-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM5 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="log")
+# IC log - Padrão do R
+*summary(ajusteKM5)
+```
+]
+ 
+.panel2-ex_8-auto[
+
+```
+Call: survfit(formula = Surv(tempos, status) ~ grupos, data = dados3, 
+    conf.type = "log")
+
+                grupos=1 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    6     21       3    0.857  0.0764        0.720        1.000
+    7     17       1    0.807  0.0869        0.653        0.996
+   10     15       1    0.753  0.0963        0.586        0.968
+   13     12       1    0.690  0.1068        0.510        0.935
+   16     11       1    0.627  0.1141        0.439        0.896
+   22      7       1    0.538  0.1282        0.337        0.858
+   23      6       1    0.448  0.1346        0.249        0.807
+
+                grupos=2 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    1     21       2   0.9048  0.0641      0.78754        1.000
+    2     19       2   0.8095  0.0857      0.65785        0.996
+    3     17       1   0.7619  0.0929      0.59988        0.968
+    4     16       2   0.6667  0.1029      0.49268        0.902
+    5     14       2   0.5714  0.1080      0.39455        0.828
+    8     12       4   0.3810  0.1060      0.22085        0.657
+   11      8       2   0.2857  0.0986      0.14529        0.562
+   12      6       2   0.1905  0.0857      0.07887        0.460
+   15      4       1   0.1429  0.0764      0.05011        0.407
+   17      3       1   0.0952  0.0641      0.02549        0.356
+   22      2       1   0.0476  0.0465      0.00703        0.322
+   23      1       1   0.0000     NaN           NA           NA
+```
+]
+
+&lt;style&gt;
+.panel1-ex_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+*tempo2g &lt;- c(tempo,tempo2)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+*status2g &lt;- c(status,status2)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+*grupos &lt;- c(rep(1,21),rep(2,21))
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+*dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+*ajusteKM6 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+*                    conf.type="log-log")
+```
+]
+ 
+.panel2-ex_9-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_9-auto[
+
+```r
+tempo2g &lt;- c(tempo,tempo2)
+status2g &lt;- c(status,status2)
+grupos &lt;- c(rep(1,21),rep(2,21))
+dados3 &lt;- data.frame(tempos=tempo2g, status=status2g, grupos=grupos)
+ajusteKM6 &lt;- survfit(Surv(tempos, status) ~ grupos, data=dados3,
+                     conf.type="log-log")
+# IC log-log - Kalbfleish-Prentice
+*summary(ajusteKM6)
+```
+]
+ 
+.panel2-ex_9-auto[
+
+```
+Call: survfit(formula = Surv(tempos, status) ~ grupos, data = dados3, 
+    conf.type = "log-log")
+
+                grupos=1 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    6     21       3    0.857  0.0764        0.620        0.952
+    7     17       1    0.807  0.0869        0.563        0.923
+   10     15       1    0.753  0.0963        0.503        0.889
+   13     12       1    0.690  0.1068        0.432        0.849
+   16     11       1    0.627  0.1141        0.368        0.805
+   22      7       1    0.538  0.1282        0.268        0.747
+   23      6       1    0.448  0.1346        0.188        0.680
+
+                grupos=2 
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    1     21       2   0.9048  0.0641      0.67005        0.975
+    2     19       2   0.8095  0.0857      0.56891        0.924
+    3     17       1   0.7619  0.0929      0.51939        0.893
+    4     16       2   0.6667  0.1029      0.42535        0.825
+    5     14       2   0.5714  0.1080      0.33798        0.749
+    8     12       4   0.3810  0.1060      0.18307        0.578
+   11      8       2   0.2857  0.0986      0.11656        0.482
+   12      6       2   0.1905  0.0857      0.05948        0.377
+   15      4       1   0.1429  0.0764      0.03566        0.321
+   17      3       1   0.0952  0.0641      0.01626        0.261
+   22      2       1   0.0476  0.0465      0.00332        0.197
+   23      1       1   0.0000     NaN           NA           NA
+```
+]
+
+&lt;style&gt;
+.panel1-ex_9-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_9-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_9-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+class: inverse, center, middle
+
+
+# Vamos usar o pacote survminer para incrementar a visualização
+
+
+---
+
+
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+*library(survminer)
+```
+]
+ 
+.panel2-ex_10-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+library(survminer)
+*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+```
+]
+ 
+.panel2-ex_10-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+library(survminer)
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+*ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+```
+]
+ 
+.panel2-ex_10-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_10-auto[
+
+```r
+library(survminer)
+dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+ajusteKM4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-log")
+*ggsurvplot(ajusteKM4, data=dados)
+```
+]
+ 
+.panel2-ex_10-auto[
+&lt;img src="index_files/figure-html/ex_10_auto_04_output-1.png" width="432" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_10-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_10-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_10-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_11-auto[
+
+```r
+*dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
+```
+]
+ 
+.panel2-ex_11-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_11-auto[
 
 ```r
 dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
@@ -1094,7 +1632,7 @@ dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
 ```
 ]
  
-.panel2-ex_8-auto[
+.panel2-ex_11-auto[
 
 ]
 
@@ -1102,7 +1640,7 @@ dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
 count: false
  
 
-.panel1-ex_8-auto[
+.panel1-ex_11-auto[
 
 ```r
 dados &lt;- data.frame(tempo=tempo2g, status=status2g, grupo= grupos)
@@ -1124,12 +1662,12 @@ fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-
 ```
 ]
  
-.panel2-ex_8-auto[
-&lt;img src="index_files/figure-html/ex_8_auto_03_output-1.png" width="432" /&gt;
+.panel2-ex_11-auto[
+&lt;img src="index_files/figure-html/ex_11_auto_03_output-1.png" width="432" /&gt;
 ]
 
 &lt;style&gt;
-.panel1-ex_8-auto {
+.panel1-ex_11-auto {
   color: black;
   width: 38.6060606060606%;
   hight: 32%;
@@ -1137,7 +1675,7 @@ fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-
   padding-left: 1%;
   font-size: 80%
 }
-.panel2-ex_8-auto {
+.panel2-ex_11-auto {
   color: black;
   width: 59.3939393939394%;
   hight: 32%;
@@ -1145,7 +1683,7 @@ fit4 &lt;- survfit(Surv(tempo2g, status2g) ~ grupo, data= dados, conf.type="log-
   padding-left: 1%;
   font-size: 80%
 }
-.panel3-ex_8-auto {
+.panel3-ex_11-auto {
   color: black;
   width: NA%;
   hight: 33%;
