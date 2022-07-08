@@ -237,7 +237,7 @@ survdiff(Surv(tempos, status) ~ grupos, data = subset(dados2, grupos!=1),  rho=0
 
 layout:true
 
-# Teste Log-rank estratificado
+# Curva de Sobrevivência estratificada
 
 ---
 
