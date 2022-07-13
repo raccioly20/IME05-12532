@@ -249,6 +249,7 @@ dados2 <- data.frame(tempos, status, grupos)
 survdiff(Surv(tempos, status) ~ grupos, data = subset(dados2, grupos!=1),  rho=0)
 ```
 
+
 ---
 
 layout:true
