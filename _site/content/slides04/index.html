@@ -4,7 +4,7 @@
     <title>Análise de Sobrevivência</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ricardo Accioly" />
-    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -13,9 +13,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Análise de Sobrevivência
+]
+.subtitle[
 ## Modelos Paramétricos
+]
+.author[
 ### Ricardo Accioly
+]
 
 ---
 
@@ -43,8 +49,6 @@ Para ajustar um modelo paramétrico usamo a função `survreg`.
 layout: true
 # Modelos Não Paramétricos - KM
 
-
-&lt;!-- get a flipbook version of the my_cars code chunk - pauses are where parentheses are balanced --&gt;
 ---
 
 count: false
@@ -104,7 +108,7 @@ count: false
 library(survival)
 tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
 cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
-*ekm &lt;- survfit(Surv(tempos,cens)~1)
+*dados &lt;- data.frame(tempos=tempos, status=cens)
 ```
 ]
  
@@ -122,7 +126,27 @@ count: false
 library(survival)
 tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
 cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
-ekm &lt;- survfit(Surv(tempos,cens)~1)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+*ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
+```
+]
+ 
+.panel2-ex_1-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1-auto[
+
+```r
+library(survival)
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
 *summary(ekm)
 ```
 ]
@@ -130,7 +154,7 @@ ekm &lt;- survfit(Surv(tempos,cens)~1)
 .panel2-ex_1-auto[
 
 ```
-Call: survfit(formula = Surv(tempos, cens) ~ 1)
+Call: survfit(formula = Surv(tempos, status) ~ 1, data = dados)
 
  time n.risk n.event survival std.err lower 95% CI upper 95% CI
     3     20       1   0.9500  0.0487      0.85913        1.000
@@ -197,12 +221,82 @@ count: false
 .panel1-ex_1A-auto[
 
 ```r
+*tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+```
+]
+ 
+.panel2-ex_1A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1A-auto[
+
+```r
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+*cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+```
+]
+ 
+.panel2-ex_1A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1A-auto[
+
+```r
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+*dados &lt;- data.frame(tempos=tempos, status=cens)
+```
+]
+ 
+.panel2-ex_1A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1A-auto[
+
+```r
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+*ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
+```
+]
+ 
+.panel2-ex_1A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1A-auto[
+
+```r
+tempos&lt;-c(3,5,6,7,8,9,10,10,12,15,15,18,19,20,22,25,28,30,40,45)
+cens&lt;-c(1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0)
+dados &lt;- data.frame(tempos=tempos, status=cens)
+ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
 *plot(ekm, xlab="Tempo (meses)",ylab="S(t) estimada")
 ```
 ]
  
 .panel2-ex_1A-auto[
-&lt;img src="index_files/figure-html/ex_1A_auto_01_output-1.png" width="100%" /&gt;
+&lt;img src="index_files/figure-html/ex_1A_auto_05_output-1.png" width="100%" /&gt;
 ]
 
 &lt;style&gt;
@@ -239,6 +333,311 @@ count: false
 ---
 
 layout: true
+# Função taxa de falhas não paramétrica e Cálculo da Mediana
+
+---
+
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_1B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+*ajusteKM_sum &lt;- summary(ajusteKM)
+```
+]
+ 
+.panel2-ex_1B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+*pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+```
+]
+ 
+.panel2-ex_1B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+*h &lt;- density(ajusteKM_sum$time, weights = pesos,
+*            kernel = "gaussian", n = 100, from = 0, to = 45)
+```
+]
+ 
+.panel2-ex_1B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+*plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+*library(survey)
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+*dados_p &lt;- svydesign(ids = ~1, data=dados)
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_07_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+dados_p &lt;- svydesign(ids = ~1, data=dados)
+*dados_svykm &lt;- svykm(Surv(tempos, status) ~ 1, dados_p, se=TRUE)
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_08_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+dados_p &lt;- svydesign(ids = ~1, data=dados)
+dados_svykm &lt;- svykm(Surv(tempos, status) ~ 1, dados_p, se=TRUE)
+*mediana.km &lt;- quantile(dados_svykm, 0.5, ci=TRUE)
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_09_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+dados_p &lt;- svydesign(ids = ~1, data=dados)
+dados_svykm &lt;- svykm(Surv(tempos, status) ~ 1, dados_p, se=TRUE)
+mediana.km &lt;- quantile(dados_svykm, 0.5, ci=TRUE)
+*med.km &lt;- c(mediana.km[1], attr(mediana.km, "ci")[1], attr(mediana.km, "ci")[2])
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_10_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+dados_p &lt;- svydesign(ids = ~1, data=dados)
+dados_svykm &lt;- svykm(Surv(tempos, status) ~ 1, dados_p, se=TRUE)
+mediana.km &lt;- quantile(dados_svykm, 0.5, ci=TRUE)
+med.km &lt;- c(mediana.km[1], attr(mediana.km, "ci")[1], attr(mediana.km, "ci")[2])
+*names(med.km) &lt;- c("mediana KM","ICI","ICS")
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_11_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_1B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+
+library(survey)
+dados_p &lt;- svydesign(ids = ~1, data=dados)
+dados_svykm &lt;- svykm(Surv(tempos, status) ~ 1, dados_p, se=TRUE)
+mediana.km &lt;- quantile(dados_svykm, 0.5, ci=TRUE)
+med.km &lt;- c(mediana.km[1], attr(mediana.km, "ci")[1], attr(mediana.km, "ci")[2])
+names(med.km) &lt;- c("mediana KM","ICI","ICS")
+*med.km
+```
+]
+ 
+.panel2-ex_1B-auto[
+&lt;img src="index_files/figure-html/ex_1B_auto_12_output-1.png" width="100%" /&gt;
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_1B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_1B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_1B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
 # Modelos Paramétricos - Exponencial
 
 ---
@@ -249,7 +648,8 @@ count: false
 .panel1-ex_2-auto[
 
 ```r
-*ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+*ajustExp &lt;- survreg(Surv(tempos,status)~1,
+*                   data=dados, dist='exponential')
 ```
 ]
  
@@ -264,7 +664,8 @@ count: false
 .panel1-ex_2-auto[
 
 ```r
-ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp &lt;- survreg(Surv(tempos,status)~1,
+                    data=dados, dist='exponential')
 *ajustExp
 ```
 ]
@@ -273,7 +674,7 @@ ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "exponential")
 
 Coefficients:
 (Intercept) 
@@ -293,7 +694,8 @@ count: false
 .panel1-ex_2-auto[
 
 ```r
-ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp &lt;- survreg(Surv(tempos,status)~1,
+                    data=dados, dist='exponential')
 ajustExp
 *alfa &lt;- exp(ajustExp$coefficients[1])
 ```
@@ -303,7 +705,7 @@ ajustExp
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "exponential")
 
 Coefficients:
 (Intercept) 
@@ -323,7 +725,8 @@ count: false
 .panel1-ex_2-auto[
 
 ```r
-ajustExp &lt;- survreg(Surv(tempos,cens)~1,dist='exponential')
+ajustExp &lt;- survreg(Surv(tempos,status)~1,
+                    data=dados, dist='exponential')
 ajustExp
 alfa &lt;- exp(ajustExp$coefficients[1])
 *alfa
@@ -334,7 +737,7 @@ alfa &lt;- exp(ajustExp$coefficients[1])
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "exponential")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "exponential")
 
 Coefficients:
 (Intercept) 
@@ -385,6 +788,617 @@ n= 20
 
 ---
 
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+*ajusteKM_sum &lt;- summary(ajusteKM)
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+*pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+*h &lt;- density(ajusteKM_sum$time, weights = pesos,
+*            kernel = "gaussian", n = 100, from = 0, to = 45)
+```
+]
+ 
+.panel2-ex_2B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+*plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+```
+]
+ 
+.panel2-ex_2B-auto[
+&lt;img src="index_files/figure-html/ex_2B_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+*expHaz &lt;- function(x, rate) {
+* dexp(x, rate=rate)/
+*   pexp(x, rate=rate, lower.tail=F)
+*} 
+```
+]
+ 
+.panel2-ex_2B-auto[
+&lt;img src="index_files/figure-html/ex_2B_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2B-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas")
+expHaz &lt;- function(x, rate) {
+  dexp(x, rate=rate)/
+    pexp(x, rate=rate, lower.tail=F)
+}
+*curve(expHaz(x, rate=1/alfa), from=0, to=45,
+*     ylab="h(t)", xlab="Tempo",
+*     col="red", ylim=c(0,1),
+*     add=TRUE)
+```
+]
+ 
+.panel2-ex_2B-auto[
+&lt;img src="index_files/figure-html/ex_2B_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_2B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+*coef &lt;- ajustExp$coefficients[1]
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+*var &lt;- ajustExp$var
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+*IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+*           exp(coef+1.96*sqrt(var)))
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+*names(IC.exp) &lt;- c("media","ICI","ICS")
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+*IC.exp
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+*est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+*est_med1 &lt;- est_med$fit[1]
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+est_med1 &lt;- est_med$fit[1]
+*est_med1.ep &lt;- est_med$se.fit[1]
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+est_med1 &lt;- est_med$fit[1]
+est_med1.ep &lt;- est_med$se.fit[1]
+*exp(est_med1)
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+
+```
+[1] 14.14836
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+est_med1 &lt;- est_med$fit[1]
+est_med1.ep &lt;- est_med$se.fit[1]
+exp(est_med1)
+*IC.mediana_exp &lt;- c(exp(est_med1),exp(est_med1-1.96*est_med1.ep),
+*exp(est_med1+1.96*est_med1.ep))
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+
+```
+[1] 14.14836
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+est_med1 &lt;- est_med$fit[1]
+est_med1.ep &lt;- est_med$se.fit[1]
+exp(est_med1)
+IC.mediana_exp &lt;- c(exp(est_med1),exp(est_med1-1.96*est_med1.ep),
+exp(est_med1+1.96*est_med1.ep))
+*names(IC.mediana_exp) &lt;- c("mediana Exp","ICI","ICS")
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+
+```
+[1] 14.14836
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2A-auto[
+
+```r
+coef &lt;- ajustExp$coefficients[1]
+var &lt;- ajustExp$var
+IC.exp &lt;- c(alfa,exp(coef-1.96*sqrt(var)),
+            exp(coef+1.96*sqrt(var)))
+names(IC.exp) &lt;- c("media","ICI","ICS")
+IC.exp
+
+est_med &lt;- predict(ajustExp,type="uquantile",p=0.5,se.fit=T)
+est_med1 &lt;- est_med$fit[1]
+est_med1.ep &lt;- est_med$se.fit[1]
+exp(est_med1)
+IC.mediana_exp &lt;- c(exp(est_med1),exp(est_med1-1.96*est_med1.ep),
+exp(est_med1+1.96*est_med1.ep))
+names(IC.mediana_exp) &lt;- c("mediana Exp","ICI","ICS")
+*IC.mediana_exp
+```
+]
+ 
+.panel2-ex_2A-auto[
+
+```
+   media      ICI      ICS 
+20.41176 12.68908 32.83455 
+```
+
+```
+[1] 14.14836
+```
+
+```
+mediana Exp         ICI         ICS 
+  14.148357    8.795399   22.759175 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_2C-auto[
+
+```r
+*library(car)
+```
+]
+ 
+.panel2-ex_2C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2C-auto[
+
+```r
+library(car)
+*n.censurado &lt;- dados$tempos[dados$status == 1]
+```
+]
+ 
+.panel2-ex_2C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2C-auto[
+
+```r
+library(car)
+n.censurado &lt;- dados$tempos[dados$status == 1]
+*qqPlot(n.censurado,
+*dist = "exp",
+*rate = 1/alfa,
+*xlab = "Quantis Teoricos (exponencial)",
+*ylab = "Quantis Empiricos")
+```
+]
+ 
+.panel2-ex_2C-auto[
+&lt;img src="index_files/figure-html/ex_2C_auto_03_output-1.png" width="100%" /&gt;
+
+```
+[1] 17 16
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
 layout: true
 # Modelos Paramétricos - Weibull
 
@@ -396,7 +1410,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-*ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+*ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ```
 ]
  
@@ -411,7 +1425,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 *ajustWei
 ```
 ]
@@ -420,7 +1434,7 @@ ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "weibull")
 
 Coefficients:
 (Intercept) 
@@ -440,7 +1454,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ajustWei
 *alfaw &lt;- exp(ajustWei$coefficients[1])
 ```
@@ -450,7 +1464,7 @@ ajustWei
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "weibull")
 
 Coefficients:
 (Intercept) 
@@ -470,7 +1484,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ajustWei
 alfaw &lt;- exp(ajustWei$coefficients[1])
 *alfaw
@@ -481,7 +1495,7 @@ alfaw &lt;- exp(ajustWei$coefficients[1])
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "weibull")
 
 Coefficients:
 (Intercept) 
@@ -506,7 +1520,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ajustWei
 alfaw &lt;- exp(ajustWei$coefficients[1])
 alfaw
@@ -518,7 +1532,7 @@ alfaw
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "weibull")
 
 Coefficients:
 (Intercept) 
@@ -543,7 +1557,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajustWei &lt;- survreg(Surv(tempos,cens)~1,dist='weibull')
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
 ajustWei
 alfaw &lt;- exp(ajustWei$coefficients[1])
 alfaw
@@ -556,7 +1570,7 @@ betaw &lt;- 1/ajustWei$scale
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "weibull")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "weibull")
 
 Coefficients:
 (Intercept) 
@@ -612,6 +1626,484 @@ n= 20
 
 ---
 
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_3A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+*ajusteKM_sum &lt;- summary(ajusteKM)
+```
+]
+ 
+.panel2-ex_3A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+*pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+```
+]
+ 
+.panel2-ex_3A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+*h &lt;- density(ajusteKM_sum$time, weights = pesos,
+*            kernel = "gaussian", n = 100, from = 0, to = 45)
+```
+]
+ 
+.panel2-ex_3A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+*plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+*    ylim=c(0,0.10))
+```
+]
+ 
+.panel2-ex_3A-auto[
+&lt;img src="index_files/figure-html/ex_3A_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.10))
+*weibHaz &lt;- function(x, shape, scale) {
+* dweibull(x, shape=shape, scale=scale)/
+* pweibull(x, shape=shape, scale=scale,
+*          lower.tail=F)
+*} 
+```
+]
+ 
+.panel2-ex_3A-auto[
+&lt;img src="index_files/figure-html/ex_3A_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.10))
+weibHaz &lt;- function(x, shape, scale) {
+  dweibull(x, shape=shape, scale=scale)/
+  pweibull(x, shape=shape, scale=scale,
+           lower.tail=F)
+}
+*curve(weibHaz(x, shape=betaw, scale=alfaw),
+*     from=0, to=45,
+*     ylab="h(t)", xlab="Tempo", col="red",
+*     add=TRUE)
+```
+]
+ 
+.panel2-ex_3A-auto[
+&lt;img src="index_files/figure-html/ex_3A_auto_07_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.10))
+weibHaz &lt;- function(x, shape, scale) {
+  dweibull(x, shape=shape, scale=scale)/
+  pweibull(x, shape=shape, scale=scale,
+           lower.tail=F)
+}
+curve(weibHaz(x, shape=betaw, scale=alfaw),
+      from=0, to=45,
+      ylab="h(t)", xlab="Tempo", col="red",
+      add=TRUE)
+```
+]
+ 
+.panel2-ex_3A-auto[
+&lt;img src="index_files/figure-html/ex_3A_auto_08_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_3A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+*ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+*estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+*estmedw1 &lt;- estmedw$fit[1]
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+estmedw1 &lt;- estmedw$fit[1]
+*estmedw1.ep &lt;- estmedw$se.fit[1]
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+estmedw1 &lt;- estmedw$fit[1]
+estmedw1.ep &lt;- estmedw$se.fit[1]
+*exp(estmedw1)
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+```
+[1] 16.82823
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+estmedw1 &lt;- estmedw$fit[1]
+estmedw1.ep &lt;- estmedw$se.fit[1]
+exp(estmedw1)
+*IC.mediana_w &lt;- c(exp(estmedw1),exp(estmedw1-1.96*estmedw1.ep),
+*exp(estmedw1+1.96*estmedw1.ep))
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+```
+[1] 16.82823
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+estmedw1 &lt;- estmedw$fit[1]
+estmedw1.ep &lt;- estmedw$se.fit[1]
+exp(estmedw1)
+IC.mediana_w &lt;- c(exp(estmedw1),exp(estmedw1-1.96*estmedw1.ep),
+exp(estmedw1+1.96*estmedw1.ep))
+*names(IC.mediana_w) &lt;- c("mediana Wei","ICI","ICS")
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+```
+[1] 16.82823
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3B-auto[
+
+```r
+ajustWei &lt;- survreg(Surv(tempos,status)~1, data=dados, dist='weibull')
+estmedw &lt;- predict(ajustWei,type="uquantile",p=0.5,se.fit=T)
+estmedw1 &lt;- estmedw$fit[1]
+estmedw1.ep &lt;- estmedw$se.fit[1]
+exp(estmedw1)
+IC.mediana_w &lt;- c(exp(estmedw1),exp(estmedw1-1.96*estmedw1.ep),
+exp(estmedw1+1.96*estmedw1.ep))
+names(IC.mediana_w) &lt;- c("mediana Wei","ICI","ICS")
+*IC.mediana_w
+```
+]
+ 
+.panel2-ex_3B-auto[
+
+```
+[1] 16.82823
+```
+
+```
+mediana Wei         ICI         ICS 
+   16.82823    11.95670    23.68456 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_3C-auto[
+
+```r
+*n.censurado &lt;- dados$tempos[dados$status == 1]
+```
+]
+ 
+.panel2-ex_3C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3C-auto[
+
+```r
+n.censurado &lt;- dados$tempos[dados$status == 1]
+*qqPlot(n.censurado,
+*dist = "weibull",
+*shape = betaw,
+*scale = alfaw,
+*xlab = "Quantis Teoricos (Weibull)",
+*ylab = "Quantis Empiricos")
+```
+]
+ 
+.panel2-ex_3C-auto[
+&lt;img src="index_files/figure-html/ex_3C_auto_02_output-1.png" width="100%" /&gt;
+
+```
+[1] 17 16
+```
+]
+
+&lt;style&gt;
+.panel1-ex_3C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_3C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_3C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
 layout: true
 # Modelos Paramétricos - Lognormal
 
@@ -623,7 +2115,7 @@ count: false
 .panel1-ex_4-auto[
 
 ```r
-*ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+*ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
 ```
 ]
  
@@ -638,7 +2130,7 @@ count: false
 .panel1-ex_4-auto[
 
 ```r
-ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
 *ajustLog
 ```
 ]
@@ -647,7 +2139,7 @@ ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "lognorm")
 
 Coefficients:
 (Intercept) 
@@ -667,9 +2159,9 @@ count: false
 .panel1-ex_4-auto[
 
 ```r
-ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
 ajustLog
-*mu &lt;- ajustLog$icoef[1]
+*mulog &lt;- ajustLog$icoef[1]
 ```
 ]
  
@@ -677,7 +2169,7 @@ ajustLog
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "lognorm")
 
 Coefficients:
 (Intercept) 
@@ -697,10 +2189,10 @@ count: false
 .panel1-ex_4-auto[
 
 ```r
-ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
 ajustLog
-mu &lt;- ajustLog$icoef[1]
-*mu
+mulog &lt;- ajustLog$icoef[1]
+*mulog
 ```
 ]
  
@@ -708,44 +2200,7 @@ mu &lt;- ajustLog$icoef[1]
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
-
-Coefficients:
-(Intercept) 
-   2.717176 
-
-Scale= 0.7648167 
-
-Loglik(model)= -65.7   Loglik(intercept only)= -65.7
-n= 20 
-```
-
-```
-(Intercept) 
-   2.717176 
-```
-]
-
----
-count: false
- 
-
-.panel1-ex_4-auto[
-
-```r
-ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
-ajustLog
-mu &lt;- ajustLog$icoef[1]
-mu
-*sigma &lt;- exp(ajustLog$icoef[2])
-```
-]
- 
-.panel2-ex_4-auto[
-
-```
-Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "lognorm")
 
 Coefficients:
 (Intercept) 
@@ -770,12 +2225,11 @@ count: false
 .panel1-ex_4-auto[
 
 ```r
-ajustLog &lt;- survreg(Surv(tempos,cens)~1,dist='lognorm')
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
 ajustLog
-mu &lt;- ajustLog$icoef[1]
-mu
-sigma &lt;- exp(ajustLog$icoef[2])
-*sigma
+mulog &lt;- ajustLog$icoef[1]
+mulog
+*sigmalog &lt;- ajustLog$scale
 ```
 ]
  
@@ -783,7 +2237,45 @@ sigma &lt;- exp(ajustLog$icoef[2])
 
 ```
 Call:
-survreg(formula = Surv(tempos, cens) ~ 1, dist = "lognorm")
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "lognorm")
+
+Coefficients:
+(Intercept) 
+   2.717176 
+
+Scale= 0.7648167 
+
+Loglik(model)= -65.7   Loglik(intercept only)= -65.7
+n= 20 
+```
+
+```
+(Intercept) 
+   2.717176 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+ajustLog
+mulog &lt;- ajustLog$icoef[1]
+mulog
+sigmalog &lt;- ajustLog$scale
+*sigmalog
+```
+]
+ 
+.panel2-ex_4-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "lognorm")
 
 Coefficients:
 (Intercept) 
@@ -801,8 +2293,7 @@ n= 20
 ```
 
 ```
-Log(scale) 
- 0.7648167 
+[1] 0.7648167
 ```
 ]
 
@@ -839,8 +2330,456 @@ Log(scale)
 
 ---
 
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_4A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+*ajusteKM_sum &lt;- summary(ajusteKM)
+```
+]
+ 
+.panel2-ex_4A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+*pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+```
+]
+ 
+.panel2-ex_4A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+*h &lt;- density(ajusteKM_sum$time, weights = pesos,
+*            kernel = "gaussian", n = 100, from = 0, to = 45)
+```
+]
+ 
+.panel2-ex_4A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+*plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+*    ylim=c(0,0.10))
+```
+]
+ 
+.panel2-ex_4A-auto[
+&lt;img src="index_files/figure-html/ex_4A_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.10))
+*logHaz &lt;- function(x, meanlog, sdlog) {
+* dlnorm(x, meanlog=meanlog, sdlog=sdlog)/
+* plnorm(x, meanlog=meanlog, sdlog=sdlog,
+*        lower.tail=F)
+*} 
+```
+]
+ 
+.panel2-ex_4A-auto[
+&lt;img src="index_files/figure-html/ex_4A_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.10))
+logHaz &lt;- function(x, meanlog, sdlog) {
+  dlnorm(x, meanlog=meanlog, sdlog=sdlog)/
+  plnorm(x, meanlog=meanlog, sdlog=sdlog,
+         lower.tail=F)
+}
+*curve(logHaz(x, meanlog=mulog, sdlog=sigmalog), from=0, to=45,
+*     ylab="h(t)", xlab="Tempo",
+*     col="red",
+*     add=TRUE)
+```
+]
+ 
+.panel2-ex_4A-auto[
+&lt;img src="index_files/figure-html/ex_4A_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_4A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+*ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+*estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+*estmedl1 &lt;- estmedl$fit[1]
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+estmedl1 &lt;- estmedl$fit[1]
+*estmedl1.ep &lt;- estmedl$se.fit[1]
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+estmedl1 &lt;- estmedl$fit[1]
+estmedl1.ep &lt;- estmedl$se.fit[1]
+*exp(estmedl1)
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+```
+[1] 15.13751
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+estmedl1 &lt;- estmedl$fit[1]
+estmedl1.ep &lt;- estmedl$se.fit[1]
+exp(estmedl1)
+*IC.mediana_log &lt;- c(exp(estmedl1),exp(estmedl1-1.96*estmedl1.ep),
+*exp(estmedl1+1.96*estmedl1.ep))
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+```
+[1] 15.13751
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+estmedl1 &lt;- estmedl$fit[1]
+estmedl1.ep &lt;- estmedl$se.fit[1]
+exp(estmedl1)
+IC.mediana_log &lt;- c(exp(estmedl1),exp(estmedl1-1.96*estmedl1.ep),
+exp(estmedl1+1.96*estmedl1.ep))
+*names(IC.mediana_log) &lt;- c("mediana Logn","ICI","ICS")
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+```
+[1] 15.13751
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4B-auto[
+
+```r
+ajustLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='lognorm')
+estmedl &lt;- predict(ajustLog,type="uquantile",p=0.5,se.fit=T)
+estmedl1 &lt;- estmedl$fit[1]
+estmedl1.ep &lt;- estmedl$se.fit[1]
+exp(estmedl1)
+IC.mediana_log &lt;- c(exp(estmedl1),exp(estmedl1-1.96*estmedl1.ep),
+exp(estmedl1+1.96*estmedl1.ep))
+names(IC.mediana_log) &lt;- c("mediana Logn","ICI","ICS")
+*IC.mediana_log
+```
+]
+ 
+.panel2-ex_4B-auto[
+
+```
+[1] 15.13751
+```
+
+```
+mediana Logn          ICI          ICS 
+    15.13751     10.71601     21.38334 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_4C-auto[
+
+```r
+*n.censurado &lt;- dados$tempos[dados$status == 1]
+```
+]
+ 
+.panel2-ex_4C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4C-auto[
+
+```r
+n.censurado &lt;- dados$tempos[dados$status == 1]
+*qqPlot(n.censurado,
+*dist = "lnorm",
+*meanlog = mulog,
+*sdlog = sigmalog,
+*xlab = "Quantis Teoricos (Lognormal)",
+*ylab = "Quantis Empiricos")
+```
+]
+ 
+.panel2-ex_4C-auto[
+&lt;img src="index_files/figure-html/ex_4C_auto_02_output-1.png" width="100%" /&gt;
+
+```
+[1] 17 16
+```
+]
+
+&lt;style&gt;
+.panel1-ex_4C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_4C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_4C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
 layout: true
-# Comparação dos Modelos 
+# Modelos Paramétricos - Log-Logistico
 
 ---
 
@@ -850,7 +2789,7 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-*tempo &lt;- ekm$time
+*ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
 ```
 ]
  
@@ -865,13 +2804,26 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-tempo &lt;- ekm$time
-*st &lt;- ekm$surv
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+*ajustLLog
 ```
 ]
  
 .panel2-ex_5-auto[
 
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
 ]
 
 ---
@@ -881,14 +2833,27 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-tempo &lt;- ekm$time
-st &lt;- ekm$surv
-*ste &lt;- exp(-tempo/alfa)
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+*betall&lt;- ajustLLog$icoef[1]
 ```
 ]
  
 .panel2-ex_5-auto[
 
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
 ]
 
 ---
@@ -898,15 +2863,33 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-tempo &lt;- ekm$time
-st &lt;- ekm$surv
-ste &lt;- exp(-tempo/alfa)
-*stw &lt;- exp(-(tempo/alfaw)^betaw)
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+betall&lt;- ajustLLog$icoef[1]
+*betall
 ```
 ]
  
 .panel2-ex_5-auto[
 
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
+
+```
+(Intercept) 
+   2.737415 
+```
 ]
 
 ---
@@ -916,16 +2899,34 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-tempo &lt;- ekm$time
-st &lt;- ekm$surv
-ste &lt;- exp(-tempo/alfa)
-stw &lt;- exp(-(tempo/alfaw)^betaw)
-*stln &lt;- pnorm((-log(tempo) + mu)/sigma)
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+betall&lt;- ajustLLog$icoef[1]
+betall
+*alfall &lt;- ajustLLog$scale
 ```
 ]
  
 .panel2-ex_5-auto[
 
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
+
+```
+(Intercept) 
+   2.737415 
+```
 ]
 
 ---
@@ -935,37 +2936,125 @@ count: false
 .panel1-ex_5-auto[
 
 ```r
-tempo &lt;- ekm$time
-st &lt;- ekm$surv
-ste &lt;- exp(-tempo/alfa)
-stw &lt;- exp(-(tempo/alfaw)^betaw)
-stln &lt;- pnorm((-log(tempo) + mu)/sigma)
-*cbind(tempo,st,ste,stw,stln)
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+betall&lt;- ajustLLog$icoef[1]
+betall
+alfall &lt;- ajustLLog$scale
+*alfall
 ```
 ]
  
 .panel2-ex_5-auto[
 
 ```
-      tempo         st       ste        stw       stln
- [1,]     3 0.95000000 0.8633164 0.95274148 0.98283934
- [2,]     5 0.90000000 0.7827384 0.89897484 0.92624322
- [3,]     6 0.85000000 0.7453152 0.86839357 0.88685752
- [4,]     7 0.80000000 0.7096812 0.83609525 0.84337638
- [5,]     8 0.75000000 0.6757509 0.80253272 0.79781416
- [6,]     9 0.70000000 0.6434428 0.76809812 0.75169629
- [7,]    10 0.65000000 0.6126794 0.73313414 0.70611769
- [8,]    12 0.59583333 0.5554947 0.66278292 0.61931883
- [9,]    15 0.54166667 0.4795676 0.55966698 0.50475984
-[10,]    18 0.48148148 0.4140186 0.46346069 0.41042396
-[11,]    19 0.42129630 0.3942241 0.43345774 0.38317692
-[12,]    20 0.36111111 0.3753760 0.40461041 0.35784922
-[13,]    22 0.30092593 0.3403401 0.35056108 0.31248031
-[14,]    25 0.24074074 0.2938212 0.27891623 0.25592025
-[15,]    28 0.18055556 0.2536607 0.21851514 0.21065456
-[16,]    30 0.12037037 0.2299851 0.18419003 0.18556452
-[17,]    40 0.06018519 0.1409071 0.07154720 0.10195229
-[18,]    45 0.06018519 0.1102934 0.04229094 0.07714984
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
+
+```
+(Intercept) 
+   2.737415 
+```
+
+```
+[1] 0.4496653
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+betall&lt;- ajustLLog$icoef[1]
+betall
+alfall &lt;- ajustLLog$scale
+alfall
+*mullog &lt;- betall
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
+
+```
+(Intercept) 
+   2.737415 
+```
+
+```
+[1] 0.4496653
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+ajustLLog
+betall&lt;- ajustLLog$icoef[1]
+betall
+alfall &lt;- ajustLLog$scale
+alfall
+mullog &lt;- betall
+*sigmallog &lt;- alfall
+```
+]
+ 
+.panel2-ex_5-auto[
+
+```
+Call:
+survreg(formula = Surv(tempos, status) ~ 1, data = dados, dist = "loglogistic")
+
+Coefficients:
+(Intercept) 
+   2.737415 
+
+Scale= 0.4496653 
+
+Loglik(model)= -66   Loglik(intercept only)= -66
+n= 20 
+```
+
+```
+(Intercept) 
+   2.737415 
+```
+
+```
+[1] 0.4496653
 ```
 ]
 
@@ -1002,8 +3091,474 @@ stln &lt;- pnorm((-log(tempo) + mu)/sigma)
 
 ---
 
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+*ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+```
+]
+ 
+.panel2-ex_5A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+*ajusteKM_sum &lt;- summary(ajusteKM)
+```
+]
+ 
+.panel2-ex_5A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+*pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+```
+]
+ 
+.panel2-ex_5A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+*h &lt;- density(ajusteKM_sum$time, weights = pesos,
+*            kernel = "gaussian", n = 100, from = 0, to = 45)
+```
+]
+ 
+.panel2-ex_5A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+*plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+*    ylim=c(0,0.15))
+```
+]
+ 
+.panel2-ex_5A-auto[
+&lt;img src="index_files/figure-html/ex_5A_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.15))
+*library(flexsurv)
+```
+]
+ 
+.panel2-ex_5A-auto[
+&lt;img src="index_files/figure-html/ex_5A_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.15))
+library(flexsurv)
+*llogisHaz &lt;- function(x, alfa, beta) {
+* haz &lt;- hllogis(x, shape = beta, scale = alfa, log = FALSE)
+*} 
+```
+]
+ 
+.panel2-ex_5A-auto[
+&lt;img src="index_files/figure-html/ex_5A_auto_07_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5A-auto[
+
+```r
+ajusteKM &lt;- survfit(Surv(tempos, status) ~ 1, data=dados)
+ajusteKM_sum &lt;- summary(ajusteKM)
+pesos &lt;- ajusteKM_sum$n.event/ajusteKM_sum$n.risk
+h &lt;- density(ajusteKM_sum$time, weights = pesos,
+             kernel = "gaussian", n = 100, from = 0, to = 45)
+plot(h$x, h$y, type = "l", xlab = "Tempo (meses)", ylab = "Taxa de Falhas",
+     ylim=c(0,0.15))
+library(flexsurv)
+llogisHaz &lt;- function(x, alfa, beta) {
+  haz &lt;- hllogis(x, shape = beta, scale = alfa, log = FALSE)
+}
+*curve(llogisHaz(x, alfa=alfall, beta=betall), from=0, to=45,
+*     ylab="h(t)", xlab="Tempo", col="red", add=TRUE)
+```
+]
+ 
+.panel2-ex_5A-auto[
+&lt;img src="index_files/figure-html/ex_5A_auto_08_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_5A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+*ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+*estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+*estmedll1 &lt;- estmedll$fit[1]
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+estmedll1 &lt;- estmedll$fit[1]
+*estmedll1.ep &lt;- estmedll$se.fit[1]
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+estmedll1 &lt;- estmedll$fit[1]
+estmedll1.ep &lt;- estmedll$se.fit[1]
+*exp(estmedll1)
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+```
+[1] 15.447
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+estmedll1 &lt;- estmedll$fit[1]
+estmedll1.ep &lt;- estmedll$se.fit[1]
+exp(estmedll1)
+*IC.mediana_llog &lt;- c(exp(estmedll1),exp(estmedll1-1.96*estmedll1.ep),
+*exp(estmedll1+1.96*estmedll1.ep))
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+```
+[1] 15.447
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+estmedll1 &lt;- estmedll$fit[1]
+estmedll1.ep &lt;- estmedll$se.fit[1]
+exp(estmedll1)
+IC.mediana_llog &lt;- c(exp(estmedll1),exp(estmedll1-1.96*estmedll1.ep),
+exp(estmedll1+1.96*estmedll1.ep))
+*names(IC.mediana_llog) &lt;- c("mediana LogL","ICI","ICS")
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+```
+[1] 15.447
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5B-auto[
+
+```r
+ajustLLog &lt;- survreg(Surv(tempos, status)~1, data=dados, dist='loglogistic')
+estmedll &lt;- predict(ajustLLog,type="uquantile",p=0.5,se.fit=T)
+estmedll1 &lt;- estmedll$fit[1]
+estmedll1.ep &lt;- estmedll$se.fit[1]
+exp(estmedll1)
+IC.mediana_llog &lt;- c(exp(estmedll1),exp(estmedll1-1.96*estmedll1.ep),
+exp(estmedll1+1.96*estmedll1.ep))
+names(IC.mediana_llog) &lt;- c("mediana LogL","ICI","ICS")
+*IC.mediana_llog
+```
+]
+ 
+.panel2-ex_5B-auto[
+
+```
+[1] 15.447
+```
+
+```
+mediana LogL          ICI          ICS 
+    15.44700     10.85399     21.98361 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_5C-auto[
+
+```r
+*n.censurado &lt;- dados$tempos[dados$status == 1]
+```
+]
+ 
+.panel2-ex_5C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_5C-auto[
+
+```r
+n.censurado &lt;- dados$tempos[dados$status == 1]
+*qqPlot(n.censurado,
+*      dist = "llogis",
+*      shape = betall,
+*      scale = alfall,
+*      xlab = "Quantis Teoricos (LogLogistico)",
+*      ylab = "Quantis Empiricos")
+```
+]
+ 
+.panel2-ex_5C-auto[
+&lt;img src="index_files/figure-html/ex_5C_auto_02_output-1.png" width="100%" /&gt;
+
+```
+[1] 17 16
+```
+]
+
+&lt;style&gt;
+.panel1-ex_5C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_5C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_5C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
 layout: true
-#  Comparação dos Modelos  
+# 1a Comparação dos Modelos 
 
 ---
 
@@ -1013,7 +3568,7 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-*par(mfrow=c(1,3))
+*tempo &lt;- ekm$time
 ```
 ]
  
@@ -1028,13 +3583,13 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-*plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+tempo &lt;- ekm$time
+*st &lt;- ekm$surv
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_02_output-1.png" width="100%" /&gt;
+
 ]
 
 ---
@@ -1044,14 +3599,14 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
-*lines(c(0,1), c(0,1), type="l", lty=1)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+*ste &lt;- exp(-tempo/alfa)
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_03_output-1.png" width="100%" /&gt;
+
 ]
 
 ---
@@ -1061,16 +3616,15 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
-lines(c(0,1), c(0,1), type="l", lty=1)
-*plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-*    ylab="S(t): Weibull")
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+*stw &lt;- exp(-(tempo/alfaw)^betaw)
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_04_output-1.png" width="100%" /&gt;
+
 ]
 
 ---
@@ -1080,17 +3634,16 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
-lines(c(0,1), c(0,1), type="l", lty=1)
-plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-     ylab="S(t): Weibull")
-*lines(c(0,1), c(0,1), type="l", lty=1)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+*stln &lt;- pnorm((-log(tempo) + mulog)/sigmalog)
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_05_output-1.png" width="100%" /&gt;
+
 ]
 
 ---
@@ -1100,19 +3653,17 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
-lines(c(0,1), c(0,1), type="l", lty=1)
-plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-     ylab="S(t): Weibull")
-lines(c(0,1), c(0,1), type="l", lty=1)
-*plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-*    ylab="S(t): log-normal")
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+stln &lt;- pnorm((-log(tempo) + mulog)/sigmalog)
+*stll &lt;- plogis((-log(tempo) + mullog)/sigmallog)
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_06_output-1.png" width="100%" /&gt;
+
 ]
 
 ---
@@ -1122,20 +3673,39 @@ count: false
 .panel1-ex_6-auto[
 
 ```r
-par(mfrow=c(1,3))
-plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
-lines(c(0,1), c(0,1), type="l", lty=1)
-plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-     ylab="S(t): Weibull")
-lines(c(0,1), c(0,1), type="l", lty=1)
-plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
-     ylab="S(t): log-normal")
-*lines(c(0,1), c(0,1), type="l", lty=1)
+tempo &lt;- ekm$time
+st &lt;- ekm$surv
+ste &lt;- exp(-tempo/alfa)
+stw &lt;- exp(-(tempo/alfaw)^betaw)
+stln &lt;- pnorm((-log(tempo) + mulog)/sigmalog)
+stll &lt;- plogis((-log(tempo) + mullog)/sigmallog)
+*cbind(tempo,st,ste,stw,stln, stll)
 ```
 ]
  
 .panel2-ex_6-auto[
-&lt;img src="index_files/figure-html/ex_6_auto_07_output-1.png" width="100%" /&gt;
+
+```
+      tempo         st       ste        stw       stln      stll
+ [1,]     3 0.95000000 0.8633164 0.95274148 0.98283934 0.9745310
+ [2,]     5 0.90000000 0.7827384 0.89897484 0.92624322 0.9247343
+ [3,]     6 0.85000000 0.7453152 0.86839357 0.88685752 0.8911964
+ [4,]     7 0.80000000 0.7096812 0.83609525 0.84337638 0.8532358
+ [5,]     8 0.75000000 0.6757509 0.80253272 0.79781416 0.8120295
+ [6,]     9 0.70000000 0.6434428 0.76809812 0.75169629 0.7687589
+ [7,]    10 0.65000000 0.6126794 0.73313414 0.70611769 0.7245227
+ [8,]    12 0.59583333 0.5554947 0.66278292 0.61931883 0.6368104
+ [9,]    15 0.54166667 0.4795676 0.55966698 0.50475984 0.5163200
+[10,]    18 0.48148148 0.4140186 0.46346069 0.41042396 0.4157713
+[11,]    19 0.42129630 0.3942241 0.43345774 0.38317692 0.3868919
+[12,]    20 0.36111111 0.3753760 0.40461041 0.35784922 0.3602069
+[13,]    22 0.30092593 0.3403401 0.35056108 0.31248031 0.3129370
+[14,]    25 0.24074074 0.2938212 0.27891623 0.25592025 0.2552681
+[15,]    28 0.18055556 0.2536607 0.21851514 0.21065456 0.2103630
+[16,]    30 0.12037037 0.2299851 0.18419003 0.18556452 0.1860066
+[17,]    40 0.06018519 0.1409071 0.07154720 0.10195229 0.1075572
+[18,]    45 0.06018519 0.1102934 0.04229094 0.07714984 0.0848755
+```
 ]
 
 &lt;style&gt;
@@ -1172,7 +3742,447 @@ plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kapl
 ---
 
 layout: true
-#  Comparação dos Modelos  
+# 2a Comparação dos Modelos 
+
+---
+
+count: false
+ 
+
+.panel1-ex_6A-auto[
+
+```r
+*med.km
+```
+]
+ 
+.panel2-ex_6A-auto[
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6A-auto[
+
+```r
+med.km
+*IC.mediana_exp
+```
+]
+ 
+.panel2-ex_6A-auto[
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+
+```
+mediana Exp         ICI         ICS 
+  14.148357    8.795399   22.759175 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6A-auto[
+
+```r
+med.km
+IC.mediana_exp
+*IC.mediana_w
+```
+]
+ 
+.panel2-ex_6A-auto[
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+
+```
+mediana Exp         ICI         ICS 
+  14.148357    8.795399   22.759175 
+```
+
+```
+mediana Wei         ICI         ICS 
+   16.82823    11.95670    23.68456 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6A-auto[
+
+```r
+med.km
+IC.mediana_exp
+IC.mediana_w
+*IC.mediana_log
+```
+]
+ 
+.panel2-ex_6A-auto[
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+
+```
+mediana Exp         ICI         ICS 
+  14.148357    8.795399   22.759175 
+```
+
+```
+mediana Wei         ICI         ICS 
+   16.82823    11.95670    23.68456 
+```
+
+```
+mediana Logn          ICI          ICS 
+    15.13751     10.71601     21.38334 
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6A-auto[
+
+```r
+med.km
+IC.mediana_exp
+IC.mediana_w
+IC.mediana_log
+*IC.mediana_llog
+```
+]
+ 
+.panel2-ex_6A-auto[
+
+```
+mediana KM        ICI        ICS 
+        18         10         28 
+```
+
+```
+mediana Exp         ICI         ICS 
+  14.148357    8.795399   22.759175 
+```
+
+```
+mediana Wei         ICI         ICS 
+   16.82823    11.95670    23.68456 
+```
+
+```
+mediana Logn          ICI          ICS 
+    15.13751     10.71601     21.38334 
+```
+
+```
+mediana LogL          ICI          ICS 
+    15.44700     10.85399     21.98361 
+```
+]
+
+&lt;style&gt;
+.panel1-ex_6A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+layout: true
+#  3a Comparação dos Modelos  
+
+---
+
+count: false
+ 
+
+.panel1-ex_6B-auto[
+
+```r
+*par(mfrow=c(1,2))
+```
+]
+ 
+.panel2-ex_6B-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6B-auto[
+
+```r
+par(mfrow=c(1,2))
+*plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+```
+]
+ 
+.panel2-ex_6B-auto[
+&lt;img src="index_files/figure-html/ex_6B_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6B-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6B-auto[
+&lt;img src="index_files/figure-html/ex_6B_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6B-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): Weibull")
+```
+]
+ 
+.panel2-ex_6B-auto[
+&lt;img src="index_files/figure-html/ex_6B_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6B-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,ste,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier", ylab="S(t): exponencial")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stw,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Weibull")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6B-auto[
+&lt;img src="index_files/figure-html/ex_6B_auto_05_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_6B-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6B-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6B-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-ex_6C-auto[
+
+```r
+*par(mfrow=c(1,2))
+```
+]
+ 
+.panel2-ex_6C-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6C-auto[
+
+```r
+par(mfrow=c(1,2))
+*plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): Log-normal")
+```
+]
+ 
+.panel2-ex_6C-auto[
+&lt;img src="index_files/figure-html/ex_6C_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6C-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Log-normal")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6C-auto[
+&lt;img src="index_files/figure-html/ex_6C_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6C-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+*plot(st,stll,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+*    ylab="S(t): log-Logistica")
+```
+]
+ 
+.panel2-ex_6C-auto[
+&lt;img src="index_files/figure-html/ex_6C_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_6C-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(st,stln,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): Log-normal")
+lines(c(0,1), c(0,1), type="l", lty=1)
+plot(st,stll,pch=16,ylim=range(c(0.0,1)), xlim=range(c(0,1)), xlab = "S(t): Kaplan-Meier",
+     ylab="S(t): log-Logistica")
+*lines(c(0,1), c(0,1), type="l", lty=1)
+```
+]
+ 
+.panel2-ex_6C-auto[
+&lt;img src="index_files/figure-html/ex_6C_auto_05_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_6C-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_6C-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_6C-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+layout: true
+#  4a Comparação dos Modelos  
 
 ---
 
@@ -1215,7 +4225,7 @@ count: false
 ```r
 par(mfrow=c(1,2))
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-*lines(c(0,tempo),c(1,stw), lty=2)
+*lines(c(0,tempo),c(1,ste), lty=2)
 ```
 ]
  
@@ -1232,8 +4242,8 @@ count: false
 ```r
 par(mfrow=c(1,2))
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-lines(c(0,tempo),c(1,stw), lty=2)
-*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+lines(c(0,tempo),c(1,ste), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Exponencial"),bty="n",cex=0.8)
 ```
 ]
  
@@ -1250,8 +4260,8 @@ count: false
 ```r
 par(mfrow=c(1,2))
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-lines(c(0,tempo),c(1,stw), lty=2)
-legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+lines(c(0,tempo),c(1,ste), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Exponencial"),bty="n",cex=0.8)
 *plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
 ```
 ]
@@ -1269,10 +4279,10 @@ count: false
 ```r
 par(mfrow=c(1,2))
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-lines(c(0,tempo),c(1,stw), lty=2)
-legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+lines(c(0,tempo),c(1,ste), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Exponencial"),bty="n",cex=0.8)
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-*lines(c(0,tempo),c(1,stln), lty=2)
+*lines(c(0,tempo),c(1,stw), lty=2)
 ```
 ]
  
@@ -1289,11 +4299,11 @@ count: false
 ```r
 par(mfrow=c(1,2))
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-lines(c(0,tempo),c(1,stw), lty=2)
-legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
+lines(c(0,tempo),c(1,ste), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Exponencial"),bty="n",cex=0.8)
 plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
-lines(c(0,tempo),c(1,stln), lty=2)
-*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Log-normal"),bty="n",cex=0.8)
+lines(c(0,tempo),c(1,stw), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Weibull"),bty="n",cex=0.8)
 ```
 ]
  
@@ -1332,10 +4342,166 @@ lines(c(0,tempo),c(1,stln), lty=2)
 
 
 
+---
+
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+*par(mfrow=c(1,2))
+```
+]
+ 
+.panel2-ex_7A-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+*plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+*lines(c(0,tempo),c(1,stln), lty=2)
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Lognormal"),bty="n",cex=0.8)
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Lognormal"),bty="n",cex=0.8)
+*plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_05_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Lognormal"),bty="n",cex=0.8)
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+*lines(c(0,tempo),c(1,stll), lty=2)
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_7A-auto[
+
+```r
+par(mfrow=c(1,2))
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stln), lty=2)
+legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "Lognormal"),bty="n",cex=0.8)
+plot(ekm, conf.int=F, xlab="Tempos", ylab="S(t)")
+lines(c(0,tempo),c(1,stll), lty=2)
+*legend(25,0.8,lty=c(1,2),c("Kaplan-Meier", "LogLogistica"),bty="n",cex=0.8)
+```
+]
+ 
+.panel2-ex_7A-auto[
+&lt;img src="index_files/figure-html/ex_7A_auto_07_output-1.png" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-ex_7A-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_7A-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_7A-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
 
 
 
-&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+
+
+
 
 &lt;style type="text/css"&gt;
 .remark-code{line-height: 1.5; font-size: 80%}
@@ -1410,6 +4576,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
