@@ -160,9 +160,10 @@ lines(ajuste1, col="blue", ci=FALSE)
 lines(ajuste2, col="green", ci=FALSE)
 lines(ajuste3, col="cyan", ci=FALSE)
 lines(ajuste4,col="red", ci=FALSE)
+lines(ajuste5,col="black", ci=FALSE)
 legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
-       col=c("blue", "green", "cyan","red"),
-       c("Exponencial","Weibull", "Lognormal" , "Gama Generalizada"))
+       col=c("blue", "green", "cyan","red", "black"),
+       c("Exponencial","Weibull", "Lognormal" , "LogLogistica", "Gama Generalizada"))
 ```
 
 

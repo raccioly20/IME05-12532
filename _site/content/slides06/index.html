@@ -4,7 +4,7 @@
     <title>Análise de Sobrevivência</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ricardo Accioly" />
-    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -13,9 +13,15 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Análise de Sobrevivência
+]
+.subtitle[
 ## Modelos Paramétricos - Outros Modelos
+]
+.author[
 ### Ricardo Accioly
+]
 
 ---
 
@@ -466,7 +472,7 @@ count: false
 .panel1-ex_2C-auto[
 
 ```r
-*ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+*ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='llogis')
 ```
 ]
  
@@ -481,7 +487,7 @@ count: false
 .panel1-ex_2C-auto[
 
 ```r
-ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='llogis')
 *ajuste4
 ```
 ]
@@ -491,18 +497,17 @@ ajuste4 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
 ```
 Call:
 flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
-    dist = "gengamma")
+    dist = "llogis")
 
 Estimates: 
-       est     L95%    U95%    se    
-mu      2.805   2.168   3.442   0.325
-sigma   0.743   0.498   1.110   0.152
-Q       0.247  -1.291   1.786   0.785
+       est    L95%   U95%   se   
+shape   2.22   1.51   3.28   0.44
+scale  15.45  10.85  21.98   2.78
 
 N = 20,  Events: 17,  Censored: 3
 Total time at risk: 347
-Log-likelihood = -65.69074, df = 3
-AIC = 137.3815
+Log-likelihood = -66.03053, df = 2
+AIC = 136.0611
 ```
 ]
 
@@ -539,6 +544,85 @@ AIC = 137.3815
 
 ---
 
+count: false
+ 
+
+.panel1-ex_2D-auto[
+
+```r
+*ajuste5 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+```
+]
+ 
+.panel2-ex_2D-auto[
+
+]
+
+---
+count: false
+ 
+
+.panel1-ex_2D-auto[
+
+```r
+ajuste5 &lt;- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+*ajuste5
+```
+]
+ 
+.panel2-ex_2D-auto[
+
+```
+Call:
+flexsurvreg(formula = Surv(tempos, status) ~ 1, data = dados, 
+    dist = "gengamma")
+
+Estimates: 
+       est     L95%    U95%    se    
+mu      2.805   2.168   3.442   0.325
+sigma   0.743   0.498   1.110   0.152
+Q       0.247  -1.291   1.786   0.785
+
+N = 20,  Events: 17,  Censored: 3
+Total time at risk: 347
+Log-likelihood = -65.69074, df = 3
+AIC = 137.3815
+```
+]
+
+&lt;style&gt;
+.panel1-ex_2D-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-ex_2D-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-ex_2D-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
 layout: true
 #  Comparação dos Modelos  
 
@@ -550,7 +634,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-*ajuste1$loglik  #exponecial
+*ajuste1$loglik  # exponencial
 ```
 ]
  
@@ -568,7 +652,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 *ajuste2$loglik  # Weibull
 ```
 ]
@@ -591,7 +675,7 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 *ajuste3$loglik  # Lognormal
 ```
@@ -619,10 +703,10 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-*ajuste4$loglik  # Gama Generalizada
+*ajuste4$loglik  # LogLogistica
 ```
 ]
  
@@ -638,6 +722,44 @@ ajuste3$loglik  # Lognormal
 
 ```
 [1] -65.7399
+```
+
+```
+[1] -66.03053
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik  # exponencial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # LogLogistica
+*ajuste5$loglik  # Gama Generalizada
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -66.03053
 ```
 
 ```
@@ -652,13 +774,15 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
-*# Exponencial q=σ=1  # Exponencial q=s=1
+# Exponencial q=σ=1
+*TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
 ```
 ]
  
@@ -674,6 +798,10 @@ ajuste4$loglik  # Gama Generalizada
 
 ```
 [1] -65.7399
+```
+
+```
+[1] -66.03053
 ```
 
 ```
@@ -688,14 +816,16 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-*TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
+# Exponencial q=σ=1
+TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
+*pchisq(TRVe,2, lower.tail = F)
 ```
 ]
  
@@ -714,85 +844,7 @@ ajuste4$loglik  # Gama Generalizada
 ```
 
 ```
-[1] -65.69074
-```
-]
-
----
-count: false
- 
-
-.panel1-ex_3-auto[
-
-```r
-ajuste1$loglik  #exponecial
-ajuste2$loglik  # Weibull
-ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
-
-# Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
-*1 - pchisq(TRVe,2)
-```
-]
- 
-.panel2-ex_3-auto[
-
-```
-[1] -68.27389
-```
-
-```
-[1] -66.13336
-```
-
-```
-[1] -65.7399
-```
-
-```
-[1] -65.69074
-```
-
-```
-[1] 0.07553559
-```
-]
-
----
-count: false
- 
-
-.panel1-ex_3-auto[
-
-```r
-ajuste1$loglik  #exponecial
-ajuste2$loglik  # Weibull
-ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
-
-# Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
-1 - pchisq(TRVe,2)
-# Weibull q = 1
-*TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
-```
-]
- 
-.panel2-ex_3-auto[
-
-```
-[1] -68.27389
-```
-
-```
-[1] -66.13336
-```
-
-```
-[1] -65.7399
+[1] -66.03053
 ```
 
 ```
@@ -811,18 +863,18 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
-1 - pchisq(TRVe,2)
+# Exponencial q=σ=1
+TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
+pchisq(TRVe,2, lower.tail = F)
 # Weibull q = 1
-TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
-*1 - pchisq(TRVw,1)
+*TRVw &lt;- 2*(ajuste5$loglik - ajuste2$loglik)
 ```
 ]
  
@@ -841,15 +893,15 @@ TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
 ```
 
 ```
+[1] -66.03053
+```
+
+```
 [1] -65.69074
 ```
 
 ```
 [1] 0.07553559
-```
-
-```
-[1] 0.3467719
 ```
 ]
 
@@ -860,20 +912,19 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
-1 - pchisq(TRVe,2)
+# Exponencial q=σ=1
+TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
+pchisq(TRVe,2, lower.tail = F)
 # Weibull q = 1
-TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
-1 - pchisq(TRVw,1)
-# Lognormal q = 0
-*TRVlog &lt;- 2*(ajuste4$loglik - ajuste3$loglik)
+TRVw &lt;- 2*(ajuste5$loglik - ajuste2$loglik)
+*pchisq(TRVw,1, lower.tail = F)
 ```
 ]
  
@@ -889,6 +940,10 @@ TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
 
 ```
 [1] -65.7399
+```
+
+```
+[1] -66.03053
 ```
 
 ```
@@ -911,21 +966,21 @@ count: false
 .panel1-ex_3-auto[
 
 ```r
-ajuste1$loglik  #exponecial
+ajuste1$loglik  # exponencial
 ajuste2$loglik  # Weibull
 ajuste3$loglik  # Lognormal
-ajuste4$loglik  # Gama Generalizada
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
-# Exponencial q=σ=1  # Exponencial q=s=1
-TRVe &lt;- 2*(ajuste4$loglik - ajuste1$loglik)
-1 - pchisq(TRVe,2)
+# Exponencial q=σ=1
+TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
+pchisq(TRVe,2, lower.tail = F)
 # Weibull q = 1
-TRVw &lt;- 2*(ajuste4$loglik - ajuste2$loglik)
-1 - pchisq(TRVw,1)
+TRVw &lt;- 2*(ajuste5$loglik - ajuste2$loglik)
+pchisq(TRVw,1, lower.tail = F)
 # Lognormal q = 0
-TRVlog &lt;- 2*(ajuste4$loglik - ajuste3$loglik)
-*1 - pchisq(TRVlog,1)
+*TRVlog &lt;- 2*(ajuste5$loglik - ajuste3$loglik)
 ```
 ]
  
@@ -941,6 +996,67 @@ TRVlog &lt;- 2*(ajuste4$loglik - ajuste3$loglik)
 
 ```
 [1] -65.7399
+```
+
+```
+[1] -66.03053
+```
+
+```
+[1] -65.69074
+```
+
+```
+[1] 0.07553559
+```
+
+```
+[1] 0.3467719
+```
+]
+
+---
+count: false
+ 
+
+.panel1-ex_3-auto[
+
+```r
+ajuste1$loglik  # exponencial
+ajuste2$loglik  # Weibull
+ajuste3$loglik  # Lognormal
+ajuste4$loglik  # LogLogistica
+ajuste5$loglik  # Gama Generalizada
+
+# Calculo do Teste de Razão de Verossimilhança
+# Exponencial q=σ=1
+TRVe &lt;- 2*(ajuste5$loglik - ajuste1$loglik)
+pchisq(TRVe,2, lower.tail = F)
+# Weibull q = 1
+TRVw &lt;- 2*(ajuste5$loglik - ajuste2$loglik)
+pchisq(TRVw,1, lower.tail = F)
+# Lognormal q = 0
+TRVlog &lt;- 2*(ajuste5$loglik - ajuste3$loglik)
+*pchisq(TRVlog,1, lower.tail = F)
+```
+]
+ 
+.panel2-ex_3-auto[
+
+```
+[1] -68.27389
+```
+
+```
+[1] -66.13336
+```
+
+```
+[1] -65.7399
+```
+
+```
+[1] -66.03053
 ```
 
 ```
@@ -1094,14 +1210,35 @@ lines(ajuste1, col="blue", ci=FALSE)
 lines(ajuste2, col="green", ci=FALSE)
 lines(ajuste3, col="cyan", ci=FALSE)
 lines(ajuste4,col="red", ci=FALSE)
-*legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
-*      col=c("blue", "green", "cyan","red"),
-*      c("Exponencial","Weibull", "Lognormal" , "Gama Generalizada"))
+*lines(ajuste5,col="black", ci=FALSE)
 ```
 ]
  
 .panel2-ex_4-auto[
 &lt;img src="index_files/figure-html/ex_4_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+lines(ajuste3, col="cyan", ci=FALSE)
+lines(ajuste4,col="red", ci=FALSE)
+lines(ajuste5,col="black", ci=FALSE)
+*legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
+*      col=c("blue", "green", "cyan","red", "black"),
+*      c("Exponencial","Weibull", "Lognormal" , "LogLogistica", "Gama Generalizada"))
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_07_output-1.png" width="100%" /&gt;
 ]
 
 &lt;style&gt;
@@ -1212,6 +1349,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

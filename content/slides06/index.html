@@ -1210,14 +1210,35 @@ lines(ajuste1, col="blue", ci=FALSE)
 lines(ajuste2, col="green", ci=FALSE)
 lines(ajuste3, col="cyan", ci=FALSE)
 lines(ajuste4,col="red", ci=FALSE)
-*legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
-*      col=c("blue", "green", "cyan","red"),
-*      c("Exponencial","Weibull", "Lognormal" , "Gama Generalizada"))
+*lines(ajuste5,col="black", ci=FALSE)
 ```
 ]
  
 .panel2-ex_4-auto[
 &lt;img src="index_files/figure-html/ex_4_auto_06_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_4-auto[
+
+```r
+plot(tempost, st, ylim=range(c(0.0,1)), xlim=range(c(0,50)), ylab="S(t)", xlab="Tempo (meses)")
+lines(ajuste1, col="blue", ci=FALSE)
+lines(ajuste2, col="green", ci=FALSE)
+lines(ajuste3, col="cyan", ci=FALSE)
+lines(ajuste4,col="red", ci=FALSE)
+lines(ajuste5,col="black", ci=FALSE)
+*legend("topright", lty=c(1,1,1,1), lwd=c(2,2,2,2),
+*      col=c("blue", "green", "cyan","red", "black"),
+*      c("Exponencial","Weibull", "Lognormal" , "LogLogistica", "Gama Generalizada"))
+```
+]
+ 
+.panel2-ex_4-auto[
+&lt;img src="index_files/figure-html/ex_4_auto_07_output-1.png" width="100%" /&gt;
 ]
 
 &lt;style&gt;
