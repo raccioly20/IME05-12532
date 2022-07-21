@@ -161,7 +161,7 @@ tab.exp
 tab.wei <- summary(ajustWei)
 tab.wei
 TRV <- 2*(tab.wei$loglik[1] - tab.exp$loglik[1])
-1 - pchisq(TRV, 1)
+pchisq(TRV, 1, lower.tail = F)
 ```
 
 No nível de significância de 𝛼=0,05 eu rejeito a hipótese de que o parametro de forma seja igual a 1.
