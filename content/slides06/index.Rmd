@@ -104,8 +104,17 @@ ajuste3
 `r chunk_reveal("ex_2C")`
 
 ```{r ex_2C, include = FALSE}
-ajuste4 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+ajuste4 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='llogis')
 ajuste4
+```
+
+---
+
+`r chunk_reveal("ex_2D")`
+
+```{r ex_2D, include = FALSE}
+ajuste5 <- flexsurvreg(Surv(tempos,status)~1,data=dados, dist='gengamma')
+ajuste5
 ```
 
 ---
@@ -118,21 +127,22 @@ layout: true
 `r chunk_reveal("ex_3")`
 
 ```{r ex_3, include = F}
-ajuste1$loglik #exponecial
+ajuste1$loglik # exponencial
 ajuste2$loglik # Weibull
 ajuste3$loglik # Lognormal
-ajuste4$loglik # Gama Generalizada
+ajuste4$loglik # LogLogistica
+ajuste5$loglik # Gama Generalizada
 
 # Calculo do Teste de Razão de Verossimilhança
 # Exponencial q=σ=1
-TRVe <- 2*(ajuste4$loglik - ajuste1$loglik)
-1 - pchisq(TRVe,2)
+TRVe <- 2*(ajuste5$loglik - ajuste1$loglik)
+pchisq(TRVe,2, lower.tail = F)
 # Weibull q = 1
-TRVw <- 2*(ajuste4$loglik - ajuste2$loglik)
-1 - pchisq(TRVw,1)
+TRVw <- 2*(ajuste5$loglik - ajuste2$loglik)
+pchisq(TRVw,1, lower.tail = F)
 # Lognormal q = 0
-TRVlog <- 2*(ajuste4$loglik - ajuste3$loglik)
-1 - pchisq(TRVlog,1)
+TRVlog <- 2*(ajuste5$loglik - ajuste3$loglik)
+pchisq(TRVlog,1, lower.tail = F)
 ```
 
 ---
