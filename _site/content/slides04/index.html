@@ -333,7 +333,7 @@ ekm &lt;- survfit(Surv(tempos,status)~1, data=dados)
 ---
 
 layout: true
-# Função taxa de falhas não paramétrica e Cálculo da Mediana
+# Função taxa de falhas não paramétrica
 
 ---
 
@@ -1391,7 +1391,6 @@ n.censurado &lt;- dados$tempos[dados$status == 1]
   font-size: 80%
 }
 &lt;/style&gt;
-
 
 
 
@@ -4535,7 +4534,7 @@ code.r.hljs.remark-code:hover{
 "ratio": "16:9",
 "highlightStyle": "foundation",
 "highlightLines": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": true
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
