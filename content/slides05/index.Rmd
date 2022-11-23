@@ -119,8 +119,11 @@ layout: true
 
 ```{r ex_8, include = F}
 tab.np <- summary(ekm)
-plot(log(tab.np$time), log(-log(tab.np$surv)),
+plot(log(-log(tab.np$surv)) ~ log(tab.np$time),
      xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+mod1.lm <- lm(log(-log(tab.np$surv)) ~ log(tab.np$time))
+abline(mod1.lm)
+confint(mod1.lm)
 ```
 
 ---
@@ -130,8 +133,10 @@ plot(log(tab.np$time), log(-log(tab.np$surv)),
 ```{r ex_8A, include = F}
 tab.np <- summary(ekm)
 invst1 <- qnorm(tab.np$surv)
-plot(log(tab.np$time), invst1,
+plot(invst1 ~ log(tab.np$time),
      xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+mod2.lm <- lm(invst1 ~ log(tab.np$time))
+abline(mod2.lm)
 ```
 
 
@@ -142,8 +147,10 @@ plot(log(tab.np$time), invst1,
 ```{r ex_8C, include = F}
 tab.np <- summary(ekm)
 invst2 <- qlogis(tab.np$surv) 
-plot(log(tab.np$time), invst2,
+plot(invst2 ~ log(tab.np$time),
      xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
+mod3.lm <- lm(invst2 ~ log(tab.np$time))
+abline(mod3.lm)
 ```
 
 ---

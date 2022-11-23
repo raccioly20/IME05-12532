@@ -4,7 +4,7 @@
     <title>Análise de Sobrevivência</title>
     <meta charset="utf-8" />
     <meta name="author" content="Ricardo Accioly" />
-    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.18/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -594,13 +594,76 @@ count: false
 
 ```r
 tab.np &lt;- summary(ekm)
-*plot(log(tab.np$time), log(-log(tab.np$surv)),
+*plot(log(-log(tab.np$surv)) ~ log(tab.np$time),
 *    xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
 ```
 ]
  
 .panel2-ex_8-auto[
 &lt;img src="index_files/figure-html/ex_8_auto_02_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+plot(log(-log(tab.np$surv)) ~ log(tab.np$time),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+*mod1.lm &lt;- lm(log(-log(tab.np$surv)) ~ log(tab.np$time))
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+plot(log(-log(tab.np$surv)) ~ log(tab.np$time),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+mod1.lm &lt;- lm(log(-log(tab.np$surv)) ~ log(tab.np$time))
+*abline(mod1.lm)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+plot(log(-log(tab.np$surv)) ~ log(tab.np$time),
+     xlab="log(t)", ylab="log(-log(S(t)))", pch=20)
+mod1.lm &lt;- lm(log(-log(tab.np$surv)) ~ log(tab.np$time))
+abline(mod1.lm)
+*confint(mod1.lm)
+```
+]
+ 
+.panel2-ex_8-auto[
+&lt;img src="index_files/figure-html/ex_8_auto_05_output-1.png" width="100%" /&gt;
+
+```
+                     2.5 %    97.5 %
+(Intercept)      -4.763998 -4.318050
+log(tab.np$time)  1.442427  1.609615
+```
 ]
 
 &lt;style&gt;
@@ -675,13 +738,52 @@ count: false
 ```r
 tab.np &lt;- summary(ekm)
 invst1 &lt;- qnorm(tab.np$surv)
-*plot(log(tab.np$time), invst1,
+*plot(invst1 ~ log(tab.np$time),
 *    xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
 ```
 ]
  
 .panel2-ex_8A-auto[
 &lt;img src="index_files/figure-html/ex_8A_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8A-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+plot(invst1 ~ log(tab.np$time),
+     xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+*mod2.lm &lt;- lm(invst1 ~ log(tab.np$time))
+```
+]
+ 
+.panel2-ex_8A-auto[
+&lt;img src="index_files/figure-html/ex_8A_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8A-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+invst1 &lt;- qnorm(tab.np$surv)
+plot(invst1 ~ log(tab.np$time),
+     xlab="log(t)", ylab=expression(Phi^-1*(S(t))), pch=20)
+mod2.lm &lt;- lm(invst1 ~ log(tab.np$time))
+*abline(mod2.lm)
+```
+]
+ 
+.panel2-ex_8A-auto[
+&lt;img src="index_files/figure-html/ex_8A_auto_05_output-1.png" width="100%" /&gt;
 ]
 
 &lt;style&gt;
@@ -757,13 +859,52 @@ count: false
 ```r
 tab.np &lt;- summary(ekm)
 invst2 &lt;- qlogis(tab.np$surv)
-*plot(log(tab.np$time), invst2,
+*plot(invst2 ~ log(tab.np$time),
 *    xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
 ```
 ]
  
 .panel2-ex_8C-auto[
 &lt;img src="index_files/figure-html/ex_8C_auto_03_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8C-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+invst2 &lt;- qlogis(tab.np$surv)
+plot(invst2 ~ log(tab.np$time),
+     xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
+*mod3.lm &lt;- lm(invst2 ~ log(tab.np$time))
+```
+]
+ 
+.panel2-ex_8C-auto[
+&lt;img src="index_files/figure-html/ex_8C_auto_04_output-1.png" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-ex_8C-auto[
+
+```r
+tab.np &lt;- summary(ekm)
+invst2 &lt;- qlogis(tab.np$surv)
+plot(invst2 ~ log(tab.np$time),
+     xlab="log(t)", ylab=expression(Phi^-1*Logis*(S(t))), pch=20)
+mod3.lm &lt;- lm(invst2 ~ log(tab.np$time))
+*abline(mod3.lm)
+```
+]
+ 
+.panel2-ex_8C-auto[
+&lt;img src="index_files/figure-html/ex_8C_auto_05_output-1.png" width="100%" /&gt;
 ]
 
 &lt;style&gt;
@@ -1722,12 +1863,12 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
 [1] 1
 ```
 
-<div id="zrklplovhp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="guilzfeuow" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#zrklplovhp .gt_table {
+#guilzfeuow .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1752,7 +1893,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-left-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_heading {
+#guilzfeuow .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1764,7 +1905,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-right-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_title {
+#guilzfeuow .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1776,7 +1917,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-bottom-width: 0;
 }
 
-#zrklplovhp .gt_subtitle {
+#guilzfeuow .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1788,13 +1929,13 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-top-width: 0;
 }
 
-#zrklplovhp .gt_bottom_border {
+#guilzfeuow .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_col_headings {
+#guilzfeuow .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1809,7 +1950,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-right-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_col_heading {
+#guilzfeuow .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1829,7 +1970,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   overflow-x: hidden;
 }
 
-#zrklplovhp .gt_column_spanner_outer {
+#guilzfeuow .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1841,15 +1982,15 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 4px;
 }
 
-#zrklplovhp .gt_column_spanner_outer:first-child {
+#guilzfeuow .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zrklplovhp .gt_column_spanner_outer:last-child {
+#guilzfeuow .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zrklplovhp .gt_column_spanner {
+#guilzfeuow .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1861,7 +2002,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   width: 100%;
 }
 
-#zrklplovhp .gt_group_heading {
+#guilzfeuow .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1886,7 +2027,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   vertical-align: middle;
 }
 
-#zrklplovhp .gt_empty_group_heading {
+#guilzfeuow .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1901,15 +2042,15 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   vertical-align: middle;
 }
 
-#zrklplovhp .gt_from_md > :first-child {
+#guilzfeuow .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zrklplovhp .gt_from_md > :last-child {
+#guilzfeuow .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zrklplovhp .gt_row {
+#guilzfeuow .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1928,7 +2069,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   overflow-x: hidden;
 }
 
-#zrklplovhp .gt_stub {
+#guilzfeuow .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1941,7 +2082,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 5px;
 }
 
-#zrklplovhp .gt_stub_row_group {
+#guilzfeuow .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1955,11 +2096,11 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   vertical-align: top;
 }
 
-#zrklplovhp .gt_row_group_first td {
+#guilzfeuow .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zrklplovhp .gt_summary_row {
+#guilzfeuow .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1969,16 +2110,16 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 5px;
 }
 
-#zrklplovhp .gt_first_summary_row {
+#guilzfeuow .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_first_summary_row.thick {
+#guilzfeuow .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zrklplovhp .gt_last_summary_row {
+#guilzfeuow .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1988,7 +2129,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-bottom-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_grand_summary_row {
+#guilzfeuow .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1998,7 +2139,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 5px;
 }
 
-#zrklplovhp .gt_first_grand_summary_row {
+#guilzfeuow .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2008,11 +2149,11 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-top-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_striped {
+#guilzfeuow .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zrklplovhp .gt_table_body {
+#guilzfeuow .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2021,7 +2162,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-bottom-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_footnotes {
+#guilzfeuow .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2035,7 +2176,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-right-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_footnote {
+#guilzfeuow .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -2044,7 +2185,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 5px;
 }
 
-#zrklplovhp .gt_sourcenotes {
+#guilzfeuow .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2058,7 +2199,7 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   border-right-color: #D3D3D3;
 }
 
-#zrklplovhp .gt_sourcenote {
+#guilzfeuow .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2066,80 +2207,73 @@ modelos &lt;- data.frame(modelos=c("Exponencial", "Weibull",
   padding-right: 5px;
 }
 
-#zrklplovhp .gt_left {
+#guilzfeuow .gt_left {
   text-align: left;
 }
 
-#zrklplovhp .gt_center {
+#guilzfeuow .gt_center {
   text-align: center;
 }
 
-#zrklplovhp .gt_right {
+#guilzfeuow .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zrklplovhp .gt_font_normal {
+#guilzfeuow .gt_font_normal {
   font-weight: normal;
 }
 
-#zrklplovhp .gt_font_bold {
+#guilzfeuow .gt_font_bold {
   font-weight: bold;
 }
 
-#zrklplovhp .gt_font_italic {
+#guilzfeuow .gt_font_italic {
   font-style: italic;
 }
 
-#zrklplovhp .gt_super {
+#guilzfeuow .gt_super {
   font-size: 65%;
 }
 
-#zrklplovhp .gt_two_val_uncert {
-  display: inline-block;
-  line-height: 1em;
-  text-align: right;
-  font-size: 60%;
-  vertical-align: -0.25em;
-  margin-left: 0.1em;
-}
-
-#zrklplovhp .gt_footnote_marks {
+#guilzfeuow .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#zrklplovhp .gt_asterisk {
+#guilzfeuow .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zrklplovhp .gt_slash_mark {
-  font-size: 0.7em;
-  line-height: 0.7em;
-  vertical-align: 0.15em;
+#guilzfeuow .gt_indent_1 {
+  text-indent: 5px;
 }
 
-#zrklplovhp .gt_fraction_numerator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: 0.45em;
+#guilzfeuow .gt_indent_2 {
+  text-indent: 10px;
 }
 
-#zrklplovhp .gt_fraction_denominator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: -0.05em;
+#guilzfeuow .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#guilzfeuow .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#guilzfeuow .gt_indent_5 {
+  text-indent: 25px;
 }
 </style>
 <table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">modelos</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">p_Akaike</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col">modelos</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">p_Akaike</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
@@ -2215,12 +2349,12 @@ gt::gt(modelos)
 [1] 1
 ```
 
-<div id="omckzseisx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="urrddpinkt" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#omckzseisx .gt_table {
+#urrddpinkt .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2245,7 +2379,7 @@ gt::gt(modelos)
   border-left-color: #D3D3D3;
 }
 
-#omckzseisx .gt_heading {
+#urrddpinkt .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2257,7 +2391,7 @@ gt::gt(modelos)
   border-right-color: #D3D3D3;
 }
 
-#omckzseisx .gt_title {
+#urrddpinkt .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2269,7 +2403,7 @@ gt::gt(modelos)
   border-bottom-width: 0;
 }
 
-#omckzseisx .gt_subtitle {
+#urrddpinkt .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2281,13 +2415,13 @@ gt::gt(modelos)
   border-top-width: 0;
 }
 
-#omckzseisx .gt_bottom_border {
+#urrddpinkt .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#omckzseisx .gt_col_headings {
+#urrddpinkt .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2302,7 +2436,7 @@ gt::gt(modelos)
   border-right-color: #D3D3D3;
 }
 
-#omckzseisx .gt_col_heading {
+#urrddpinkt .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2322,7 +2456,7 @@ gt::gt(modelos)
   overflow-x: hidden;
 }
 
-#omckzseisx .gt_column_spanner_outer {
+#urrddpinkt .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2334,15 +2468,15 @@ gt::gt(modelos)
   padding-right: 4px;
 }
 
-#omckzseisx .gt_column_spanner_outer:first-child {
+#urrddpinkt .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#omckzseisx .gt_column_spanner_outer:last-child {
+#urrddpinkt .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#omckzseisx .gt_column_spanner {
+#urrddpinkt .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2354,7 +2488,7 @@ gt::gt(modelos)
   width: 100%;
 }
 
-#omckzseisx .gt_group_heading {
+#urrddpinkt .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2379,7 +2513,7 @@ gt::gt(modelos)
   vertical-align: middle;
 }
 
-#omckzseisx .gt_empty_group_heading {
+#urrddpinkt .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2394,15 +2528,15 @@ gt::gt(modelos)
   vertical-align: middle;
 }
 
-#omckzseisx .gt_from_md > :first-child {
+#urrddpinkt .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#omckzseisx .gt_from_md > :last-child {
+#urrddpinkt .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#omckzseisx .gt_row {
+#urrddpinkt .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2421,7 +2555,7 @@ gt::gt(modelos)
   overflow-x: hidden;
 }
 
-#omckzseisx .gt_stub {
+#urrddpinkt .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2434,7 +2568,7 @@ gt::gt(modelos)
   padding-right: 5px;
 }
 
-#omckzseisx .gt_stub_row_group {
+#urrddpinkt .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2448,11 +2582,11 @@ gt::gt(modelos)
   vertical-align: top;
 }
 
-#omckzseisx .gt_row_group_first td {
+#urrddpinkt .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#omckzseisx .gt_summary_row {
+#urrddpinkt .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2462,16 +2596,16 @@ gt::gt(modelos)
   padding-right: 5px;
 }
 
-#omckzseisx .gt_first_summary_row {
+#urrddpinkt .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#omckzseisx .gt_first_summary_row.thick {
+#urrddpinkt .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#omckzseisx .gt_last_summary_row {
+#urrddpinkt .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2481,7 +2615,7 @@ gt::gt(modelos)
   border-bottom-color: #D3D3D3;
 }
 
-#omckzseisx .gt_grand_summary_row {
+#urrddpinkt .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2491,7 +2625,7 @@ gt::gt(modelos)
   padding-right: 5px;
 }
 
-#omckzseisx .gt_first_grand_summary_row {
+#urrddpinkt .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2501,11 +2635,11 @@ gt::gt(modelos)
   border-top-color: #D3D3D3;
 }
 
-#omckzseisx .gt_striped {
+#urrddpinkt .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#omckzseisx .gt_table_body {
+#urrddpinkt .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2514,7 +2648,7 @@ gt::gt(modelos)
   border-bottom-color: #D3D3D3;
 }
 
-#omckzseisx .gt_footnotes {
+#urrddpinkt .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2528,7 +2662,7 @@ gt::gt(modelos)
   border-right-color: #D3D3D3;
 }
 
-#omckzseisx .gt_footnote {
+#urrddpinkt .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -2537,7 +2671,7 @@ gt::gt(modelos)
   padding-right: 5px;
 }
 
-#omckzseisx .gt_sourcenotes {
+#urrddpinkt .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2551,7 +2685,7 @@ gt::gt(modelos)
   border-right-color: #D3D3D3;
 }
 
-#omckzseisx .gt_sourcenote {
+#urrddpinkt .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2559,80 +2693,73 @@ gt::gt(modelos)
   padding-right: 5px;
 }
 
-#omckzseisx .gt_left {
+#urrddpinkt .gt_left {
   text-align: left;
 }
 
-#omckzseisx .gt_center {
+#urrddpinkt .gt_center {
   text-align: center;
 }
 
-#omckzseisx .gt_right {
+#urrddpinkt .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#omckzseisx .gt_font_normal {
+#urrddpinkt .gt_font_normal {
   font-weight: normal;
 }
 
-#omckzseisx .gt_font_bold {
+#urrddpinkt .gt_font_bold {
   font-weight: bold;
 }
 
-#omckzseisx .gt_font_italic {
+#urrddpinkt .gt_font_italic {
   font-style: italic;
 }
 
-#omckzseisx .gt_super {
+#urrddpinkt .gt_super {
   font-size: 65%;
 }
 
-#omckzseisx .gt_two_val_uncert {
-  display: inline-block;
-  line-height: 1em;
-  text-align: right;
-  font-size: 60%;
-  vertical-align: -0.25em;
-  margin-left: 0.1em;
-}
-
-#omckzseisx .gt_footnote_marks {
+#urrddpinkt .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-#omckzseisx .gt_asterisk {
+#urrddpinkt .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#omckzseisx .gt_slash_mark {
-  font-size: 0.7em;
-  line-height: 0.7em;
-  vertical-align: 0.15em;
+#urrddpinkt .gt_indent_1 {
+  text-indent: 5px;
 }
 
-#omckzseisx .gt_fraction_numerator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: 0.45em;
+#urrddpinkt .gt_indent_2 {
+  text-indent: 10px;
 }
 
-#omckzseisx .gt_fraction_denominator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: -0.05em;
+#urrddpinkt .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#urrddpinkt .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#urrddpinkt .gt_indent_5 {
+  text-indent: 25px;
 }
 </style>
 <table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">modelos</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">p_Akaike</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col">modelos</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">p_Akaike</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">

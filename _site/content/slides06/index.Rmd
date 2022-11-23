@@ -147,6 +147,33 @@ pchisq(TRVlog,1, lower.tail = F)
 
 ---
 
+`r chunk_reveal("ex_3A")`
+
+```{r ex_3A, include = F}
+aic.exp <- -2*ajuste1$loglik + 2*1
+aic.exp
+aic.wei <- -2*ajuste2$loglik + 2*2
+aic.wei
+aic.ln <- -2*ajuste3$loglik + 2*2
+aic.ln
+aic.ll <- -2*ajuste4$loglik + 2*2
+aic.ll
+aic.gg <- -2*ajuste5$loglik + 2*3
+aic.gg
+aic <- c(aic.exp, aic.wei, aic.ln, aic.ll, aic.gg)
+delta.aic <- aic - min(aic)
+delta.aic
+peso.aic <- exp(-0.5*delta.aic)/sum(exp(-0.5*delta.aic))
+sum(peso.aic)
+modelos <- data.frame(modelos=c("Exponencial", "Weibull",
+                                "Lognormal", "Loglogistico", "GG"),
+                      p_Akaike = peso.aic)
+gt::gt(modelos)
+```
+
+
+---
+
 layout: true
 #  Avaliação Gráfica dos modelos 
 
